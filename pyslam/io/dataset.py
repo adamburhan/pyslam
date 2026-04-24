@@ -1119,6 +1119,15 @@ class TartanairDataset(Dataset):
             self.is_ok = False
             self._timestamp = None
         return np.ascontiguousarray(img) if img is not None else None
+    
+    def getDepthAux(self, frame_id):
+        frame_id += self.start_frame_id
+        if frame_id >= self.max_frame_id:
+            return None
+        file = self.left_depth_path + f"/{str(frame_id).zfill(6)}_left_depth.npy"
+        img = np.load(file)
+        return np.ascontiguousarray(img) if img is not None else None
+
 
     def getImageRight(self, frame_id):
         img = None

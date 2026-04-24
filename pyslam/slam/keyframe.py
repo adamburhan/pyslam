@@ -333,6 +333,7 @@ class KeyFrame(Frame, KeyFrameGraph):
             frame.des
         )  # keypoint descriptors                  [NxD] where D is the descriptor length
         self.depths = frame.depths  # keypoint depths                       [Nx1]
+        self.kps_depth_weight = frame.kps_depth_weight  # per-kp depth-uncertainty weights [Nx1]
         self.kps_ur = frame.kps_ur  # right keypoint coordinates            [Nx1]
 
         self.median_depth = frame.median_depth

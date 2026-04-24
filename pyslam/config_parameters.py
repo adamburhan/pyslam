@@ -384,6 +384,7 @@ class Parameters:
     )
     kSemanticMappingDebugAndPrintToFile = True
     kUseSemanticsInOptimization = False  # To enable/disable the use of semantics in optimization (disabled by default, it's still very experimental)
+    kUseDepthUncertaintyInOptimization = False  # Scale reprojection-edge information by per-keypoint depth-uncertainty weights (populated from aux_depth in monocular mode)
     kSemanticMappingTimeoutPopKeyframe = 0.5  # [s]
     #
     kSemanticSegmentationEnforceUniqueInstanceIds = (

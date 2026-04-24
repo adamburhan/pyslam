@@ -191,6 +191,9 @@ def bundle_adjustment(
             if Parameters.kUseSemanticsInOptimization and kf.kps_sem is not None:
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[idx])
 
+            if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                invSigma2 *= kf.kps_depth_weight[idx]
+
             camera = kf.camera
 
             if is_stereo_obs:
@@ -455,6 +458,9 @@ def pose_optimization(frame, verbose=False, rounds=10):
 
             if Parameters.kUseSemanticsInOptimization and frame.kps_sem is not None:
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(frame.kps_sem[idx])
+
+            if Parameters.kUseDepthUncertaintyInOptimization and frame.kps_depth_weight is not None:
+                invSigma2 *= frame.kps_depth_weight[idx]
 
             if is_stereo_obs:
                 # print('adding stereo edge between point ', p.id,' and frame ', frame.id)
@@ -728,6 +734,9 @@ def local_bundle_adjustment(
             if Parameters.kUseSemanticsInOptimization and kf.kps_sem is not None:
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[p_idx])
 
+            if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                invSigma2 *= kf.kps_depth_weight[p_idx]
+
             camera = kf.camera
 
             if is_stereo_obs:
@@ -950,6 +959,9 @@ def lba_optimization_process(
 
                 if Parameters.kUseSemanticsInOptimization and kf.kps_sem is not None:
                     invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[p_idx])
+
+                if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                    invSigma2 *= kf.kps_depth_weight[p_idx]
 
                 if is_stereo_obs:
                     edge = g2o.EdgeStereoSE3ProjectXYZ()

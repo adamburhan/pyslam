@@ -1079,7 +1079,7 @@ class Tracking:
             self.pose_timestamps.append(f_cur.timestamp)
 
     # @ main track method @
-    def track(self, img, img_right, depth, img_id, timestamp=None, mask=None, mask_right=None):
+    def track(self, img, img_right, depth, img_id, timestamp=None, mask=None, mask_right=None, aux_depth=None):
         """
         Track a frame.
         The mask is used to mask the image for feature tracking.
@@ -1138,6 +1138,7 @@ class Tracking:
             img_id=img_id,
             mask=mask,
             mask_right=mask_right,
+            aux_depth=aux_depth if Parameters.kUseDepthUncertaintyInOptimization else None,
         )
         self.f_cur = f_cur
         if f_cur_is_blurry:

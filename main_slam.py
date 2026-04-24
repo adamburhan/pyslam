@@ -72,6 +72,7 @@ import traceback
 
 import argparse
 
+from pyslam.io.dataset_types import DatasetType
 
 from typing import TYPE_CHECKING
 
@@ -324,6 +325,8 @@ if __name__ == "__main__":
                     print("..................................")
                     img = dataset.getImageColor(img_id)
                     depth = dataset.getDepth(img_id)
+                    if dataset.type == DatasetType.TARTANAIR:
+                        aux_depth = dataset.getDepthAux(img_id)
                     img_right = (
                         dataset.getImageColorRight(img_id)
                         if dataset.sensor_type == SensorType.STEREO
@@ -357,7 +360,7 @@ if __name__ == "__main__":
                                 # cv2.imshow("depth prediction", depth_img)
                                 cv_image_viewer.draw(depth_img, "depth prediction")
 
-                        slam.track(img, img_right, depth, img_id, timestamp)  # main SLAM function
+                        slam.track(img, img_right, depth, img_id, timestamp, aux_depth=aux_depth)  # main SLAM function
 
                         # 3D display (map display)
                         if viewer3D:

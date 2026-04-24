@@ -369,6 +369,7 @@ class Frame(FrameBase):
         mask=None,
         mask_right=None,
         frame_data_dict=None,
+        aux_depth=None,
     ):
         super().__init__(camera, pose=pose, id=id, timestamp=timestamp, img_id=img_id)
 
@@ -394,6 +395,7 @@ class Frame(FrameBase):
         self.des = None  # keypoint descriptors                                           [NxD] where D is the descriptor length
         self.des_r = None  # right keypoint descriptors                                     [NxD] where D is the descriptor length
         self.depths = None  # keypoint depths                                                [Nx1]
+        self.kps_depth_weight = None # keypoint depth uncertainty weights                    [Nx1]
         self.kps_ur = None  # corresponding right u-coordinates for left keypoints           [Nx1] (computed with stereo matching and assuming rectified stereo images)
 
         # map points information arrays
@@ -464,6 +466,7 @@ class Frame(FrameBase):
             self.des = frame_data_dict["des"]
             self.des_r = frame_data_dict["des_r"]
             self.depths = frame_data_dict["depths"]
+            self.kps_depth_weight = frame_data_dict.get("kps_depth_weight")
             self.kps_ur = frame_data_dict["kps_ur"]
             self.points = frame_data_dict["points"]
             self.outliers = frame_data_dict["outliers"]
@@ -557,6 +560,11 @@ class Frame(FrameBase):
                     self.depths = np.full(len(self.kps), -1, dtype=float)
                     self.kps_ur = np.full(len(self.kps), -1, dtype=float)
                     self.compute_stereo_matches(img, img_right)
+
+                # compute per-keypoint depth-uncertainty weights from auxiliary depth
+                # (monocular uncertainty-weighting ablation: GT or predicted depth map)
+                if aux_depth is not None:
+                    self.kps_depth_weight = self._compute_kps_depth_weight(aux_depth)
 
             self.ensure_contiguous_arrays()
 
@@ -687,6 +695,11 @@ class Frame(FrameBase):
                 if self.depths is not None and len(self.depths) > 0
                 else None
             ),
+            "kps_depth_weight": (
+                self.kps_depth_weight.astype(float).tolist()
+                if self.kps_depth_weight is not None and len(self.kps_depth_weight) > 0
+                else None
+            ),
             "kps_ur": (
                 self.kps_ur.astype(float).tolist()
                 if self.kps_ur is not None and len(self.kps_ur) > 0
@@ -774,6 +787,9 @@ class Frame(FrameBase):
         )
 
         frame_data_dict["depths"] = deserialize_array_flexible(json_str["depths"], dtype=np.float32)
+        frame_data_dict["kps_depth_weight"] = deserialize_array_flexible(
+            json_str.get("kps_depth_weight"), dtype=np.float32
+        )
         frame_data_dict["kps_ur"] = deserialize_array_flexible(json_str["kps_ur"], dtype=np.float32)
 
         pts_val = json_str["points"]
@@ -1094,6 +1110,18 @@ class Frame(FrameBase):
                         self.points[i] = replacement
                         num_replaced_points += 1
             print("#replaced points: ", num_replaced_points)
+
+    def _compute_kps_depth_weight(self, aux_depth):
+        """Compute per-keypoint scalar weights from an auxiliary depth map (GT or predicted).
+
+        These weights multiply `invSigma2` in the info-matrix assembly at
+        optimizer_g2o.py's reprojection-edge sites. A value > 1 upweights the edge
+        (low depth uncertainty), a value < 1 downweights it.
+
+        TODO: sample a local patch around each keypoint pixel, compute depth variance,
+              and map variance -> weight. Return shape: [len(self.kps)] float array.
+        """
+        return np.ones(len(self.kps), dtype=np.float32)
 
     def compute_stereo_from_rgbd(self, kps_data, depth):
         kps_int = np.ascontiguousarray(kps_data[:, :2], dtype=np.uint32)
