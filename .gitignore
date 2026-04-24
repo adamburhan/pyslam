@@ -36,6 +36,7 @@ thirdparty/pydbow2/modules/dbow2/.cache
 thirdparty/pydbow3/.cache
 thirdparty/pydbow3/modules/dbow3/.cache
 thirdparty/lietorch/.cache
+thirdparty/
 
 matches.txt 
 map.png
