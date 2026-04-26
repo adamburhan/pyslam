@@ -119,7 +119,7 @@ SCANNET_DATASET:
 TARTANAIR_DATASET:
   type: tartanair
   sensor_type: mono # Here, 'sensor_type' can be 'mono', 'stereo' or 'rgbd'
-  base_path: /home/adam/datasets/tartanair/soulcity/Easy
+  base_path: /Volumes/T9/datasets/tartanair/abandonedfactory_night/Easy
   name: 'P002'
   settings: settings/TARTANAIR.yaml 
   groundtruth_file: auto

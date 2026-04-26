@@ -370,7 +370,7 @@ if __name__ == "__main__":
                                 cv_image_viewer.draw(depth_img, "depth prediction")
 
                         slam.track(img, img_right, depth, img_id, timestamp, aux_depth=aux_depth)  # main SLAM function
-                        if slam.tracking.state == SlamState.LOST:
+                        if slam.tracking.state in (SlamState.LOST, SlamState.RELOCALIZE):
                             Printer.red(f"Tracking lost at frame {img_id} with timestamp {timestamp}")
                             num_tracking_lost += 1
                         # 3D display (map display)
