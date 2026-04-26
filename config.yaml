@@ -119,8 +119,8 @@ SCANNET_DATASET:
 TARTANAIR_DATASET:
   type: tartanair
   sensor_type: mono # Here, 'sensor_type' can be 'mono', 'stereo' or 'rgbd'
-  base_path: /Volumes/T9/datasets/tartanair/abandonedfactory_night/Easy
-  name: 'P009'
+  base_path: /home/adam/datasets/tartanair/soulcity/Easy
+  name: 'P002'
   settings: settings/TARTANAIR.yaml 
   groundtruth_file: auto
   environment_type: outdoor
@@ -180,8 +180,8 @@ VIDEO_DATASET:
   # settings: settings/KITTI00-02.yaml
   # name: video.mp4
   #
-  base_path: ./data/videos/kitti00
-  settings: settings/KITTI00-02.yaml
+  base_path: ./data/videos/kitti06
+  settings: settings/KITTI04-12.yaml
   name: video_color.mp4
   #
   #base_path: ./data/videos/webcam
