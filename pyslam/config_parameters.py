@@ -34,7 +34,7 @@ class Parameters:
     # ================================================================
     # C++ core
     # ================================================================
-    USE_CPP_CORE = True  # True: use the C++ core; False: use the Python core
+    USE_CPP_CORE = False  # True: use the C++ core; False: use the Python core
 
     # ================================================================
     # Logs
@@ -47,7 +47,7 @@ class Parameters:
     # ================================================================
 
     # SLAM tracking-mapping threads
-    kLocalMappingOnSeparateThread = True  # True: move local mapping on a separate thread, False: tracking and then local mapping in a single thread
+    kLocalMappingOnSeparateThread = True # True: move local mapping on a separate thread, False: tracking and then local mapping in a single thread
     kTrackingWaitForLocalMappingToGetIdle = False  # True: wait for local mapping to get idle before starting tracking, False: tracking and then local mapping in a single thread in a standard way
     kWaitForLocalMappingTimeout = (
         0.5 if not USE_CPP_CORE else 0.05
@@ -384,7 +384,7 @@ class Parameters:
     )
     kSemanticMappingDebugAndPrintToFile = True
     kUseSemanticsInOptimization = False  # To enable/disable the use of semantics in optimization (disabled by default, it's still very experimental)
-    kUseDepthUncertaintyInOptimization = False  # Scale reprojection-edge information by per-keypoint depth-uncertainty weights (populated from aux_depth in monocular mode)
+    kUseDepthUncertaintyInOptimization = False   # Scale reprojection-edge information by per-keypoint depth-uncertainty weights (populated from aux_depth in monocular mode)
     kSemanticMappingTimeoutPopKeyframe = 0.5  # [s]
     #
     kSemanticSegmentationEnforceUniqueInstanceIds = (

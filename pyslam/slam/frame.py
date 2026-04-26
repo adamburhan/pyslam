@@ -1121,7 +1121,15 @@ class Frame(FrameBase):
         TODO: sample a local patch around each keypoint pixel, compute depth variance,
               and map variance -> weight. Return shape: [len(self.kps)] float array.
         """
-        return np.ones(len(self.kps), dtype=np.float32)
+        # SANITY CHECK (anti-octave): heavily upweight coarse-pyramid features (which
+        # are inherently noisier). The optimizer applies our weight ON TOP of
+        # inv_level_sigmas2 = 1/1.2^(2*octave), so to actually INVERT the pyramid
+        # weighting (level 7 trusted more than level 0), we need 1.2^(4*octave) so the
+        # net multiplier becomes 1.2^(2*octave). 1.2^(2*octave) alone would just cancel
+        # the pyramid weighting (uniform across octaves).
+        weights = (1.2 ** (4 * self.octaves.astype(np.float32)))
+        return (weights / weights.mean()).astype(np.float32)
+
 
     def compute_stereo_from_rgbd(self, kps_data, depth):
         kps_int = np.ascontiguousarray(kps_data[:, :2], dtype=np.uint32)

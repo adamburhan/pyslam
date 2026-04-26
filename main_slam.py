@@ -22,6 +22,7 @@ import cv2
 import time
 import os
 import sys
+import random
 import numpy as np
 import json
 import threading
@@ -29,6 +30,13 @@ import warnings
 import multiprocessing
 import torch.multiprocessing as mp
 import platform
+
+# Seed all RNGs for run-to-run reproducibility (used to lower variance during the
+# depth-uncertainty-weighting ablation). Must run before any RNG-using imports/threads.
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+cv2.setRNGSeed(SEED)
 
 from pyslam.config import Config  # , dump_config_to_json
 
@@ -325,6 +333,7 @@ if __name__ == "__main__":
                     print("..................................")
                     img = dataset.getImageColor(img_id)
                     depth = dataset.getDepth(img_id)
+                    aux_depth = None
                     if dataset.type == DatasetType.TARTANAIR:
                         aux_depth = dataset.getDepthAux(img_id)
                     img_right = (
