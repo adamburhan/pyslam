@@ -370,7 +370,9 @@ if __name__ == "__main__":
                                 cv_image_viewer.draw(depth_img, "depth prediction")
 
                         slam.track(img, img_right, depth, img_id, timestamp, aux_depth=aux_depth)  # main SLAM function
-
+                        if slam.tracking.state == SlamState.LOST:
+                            Printer.red(f"Tracking lost at frame {img_id} with timestamp {timestamp}")
+                            num_tracking_lost += 1
                         # 3D display (map display)
                         if viewer3D:
                             viewer3D.draw_slam_map(slam)
@@ -433,8 +435,8 @@ if __name__ == "__main__":
                     # key_cv = cv2.waitKey(1) & 0xFF
                     key_cv = cv_image_viewer.get_key() if cv_image_viewer else None
 
-            if slam.tracking.state == SlamState.LOST:
-                num_tracking_lost += 1
+            # if slam.tracking.state == SlamState.LOST:
+            #     num_tracking_lost += 1
 
             # manage interface infos
             if is_map_save:
