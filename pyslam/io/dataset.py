@@ -1591,3 +1591,31 @@ class RoverDataset(Dataset):
             self.is_ok = False
             self._timestamp = None
         return np.ascontiguousarray(img) if img is not None else None
+
+
+class Eth3dDataset(TumDataset):
+    def __init__(
+        self,
+        path,
+        name,
+        sensor_type=SensorType.RGBD,
+        associations=None,
+        start_frame_id=0,
+        type=DatasetType.ETH3D,
+    ):
+        super().__init__(
+            path,
+            name,
+            sensor_type,
+            associations,
+            start_frame_id,
+            type
+        )
+
+    def getDepthAux(self, frame_id):
+        f_id = frame_id + self.start_frame_id
+        if f_id >= self.max_frame_id:
+            return None
+        file = self.base_path + self.associations_data[f_id].strip().split()[3]
+        d = cv2.imread(file, cv2.IMREAD_UNCHANGED)
+        return None if d is None else (d.astype(np.float32) / 5000.0)

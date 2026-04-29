@@ -192,6 +192,7 @@ def bundle_adjustment(
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[idx])
 
             if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                print("new weight")
                 invSigma2 *= kf.kps_depth_weight[idx]
 
             camera = kf.camera
@@ -460,6 +461,7 @@ def pose_optimization(frame, verbose=False, rounds=10):
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(frame.kps_sem[idx])
 
             if Parameters.kUseDepthUncertaintyInOptimization and frame.kps_depth_weight is not None:
+                print("new weight")
                 invSigma2 *= frame.kps_depth_weight[idx]
 
             if is_stereo_obs:
@@ -735,6 +737,7 @@ def local_bundle_adjustment(
                 invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[p_idx])
 
             if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                print("new weight")
                 invSigma2 *= kf.kps_depth_weight[p_idx]
 
             camera = kf.camera
@@ -961,6 +964,7 @@ def lba_optimization_process(
                     invSigma2 *= SemanticMappingShared.get_semantic_weight(kf.kps_sem[p_idx])
 
                 if Parameters.kUseDepthUncertaintyInOptimization and kf.kps_depth_weight is not None:
+                    print("new weight")
                     invSigma2 *= kf.kps_depth_weight[p_idx]
 
                 if is_stereo_obs:

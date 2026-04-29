@@ -1,11 +1,11 @@
 DATASET:
   # select your dataset (decomment only one of the following lines) 
-  #type: EUROC_DATASET  
+  # type: EUROC_DATASET  
   #type: KITTI_DATASET
   #type: TUM_DATASET
   #type: ICL_NUIM_DATASET
   #type: REPLICA_DATASET
-  type: TARTANAIR_DATASET
+  # type: TARTANAIR_DATASET
   #type: SEVEN_SCENES_DATASET
   #type: NEURAL_RGBD_DATASET
   #type: BONN_RGBD_DYNAMIC_DATASET
@@ -17,6 +17,7 @@ DATASET:
   #type: MCAP_DATASET
   #type: FOLDER_DATASET
   #type: LIVE_DATASET  # Not recommended for current development stage
+  type: ETH3D_DATASET
 
 
 KITTI_DATASET:
@@ -76,8 +77,8 @@ ICL_NUIM_DATASET:
 
 EUROC_DATASET:
   type: euroc
-  sensor_type: stereo # Here, sensor_type can be 'mono' or 'stereo'
-  base_path: /home/luigi/Work/datasets/rgbd_datasets/euroc
+  sensor_type: mono # Here, sensor_type can be 'mono' or 'stereo'
+  base_path: /Volumes/T9/datasets/euroc/vicon_room1
   # NOTE: The name is supposed to be one of the following: MH01, MH02, MH03, MH04, MH05, V101, V102, V103, V201, V202, V203
   #name: MH01
   #name: MH02  
@@ -85,7 +86,8 @@ EUROC_DATASET:
   #name: MH04
   #name: MH05       
   #name: V101  
-  name: V102
+  # name: V102
+  name: V1_02_medium
   #name: V202
   #name: V203   
   # 'settings' will be used when sensor_type: : 'mono'
@@ -94,7 +96,7 @@ EUROC_DATASET:
   settings_stereo: settings/EuRoC_stereo.yaml
   associations: auto
   groundtruth_file: auto
-  start_frame_id: 0
+  start_frame_id: 1400
 
 
 REPLICA_DATASET:
@@ -304,6 +306,16 @@ LIVE_DATASET:
   base_path: 
   name: /dev/video2
   settings: settings/WEBCAM.yaml 
+  groundtruth_file: auto
+
+
+ETH3D_DATASET:
+  type: eth3d
+  sensor_type: mono # Here, 'sensor_type' can be 'mono' or 'rgbd'
+  base_path: /Volumes/T9/datasets/eth3d/training
+  name: 'mannequin_4'
+  settings: settings/ETH3D.yaml 
+  associations: associated.txt
   groundtruth_file: auto
 
 

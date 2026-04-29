@@ -58,6 +58,7 @@ from .dataset import (
     SevenScenesDataset,
     NeuralRGBDDataset,
     RoverDataset,
+    Eth3dDataset,
 )
 from .mcap_dataset import McapDataset
 
@@ -243,6 +244,10 @@ def dataset_factory(config: "Config") -> Dataset:
             start_frame_id,
             type=DatasetType.ROVER,
             environment_type=environment_type,
+        )
+    if type == "eth3d":
+        dataset = Eth3dDataset(
+            path, name, sensor_type, associations, start_frame_id, DatasetType.ETH3D
         )
 
     dataset.minimal_config = MinimalDatasetConfig(config=config)

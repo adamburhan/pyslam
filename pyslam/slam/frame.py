@@ -1121,14 +1121,23 @@ class Frame(FrameBase):
         TODO: sample a local patch around each keypoint pixel, compute depth variance,
               and map variance -> weight. Return shape: [len(self.kps)] float array.
         """
-        # SANITY CHECK (anti-octave): heavily upweight coarse-pyramid features (which
-        # are inherently noisier). The optimizer applies our weight ON TOP of
-        # inv_level_sigmas2 = 1/1.2^(2*octave), so to actually INVERT the pyramid
-        # weighting (level 7 trusted more than level 0), we need 1.2^(4*octave) so the
-        # net multiplier becomes 1.2^(2*octave). 1.2^(2*octave) alone would just cancel
-        # the pyramid weighting (uniform across octaves).
-        weights = (1.2 ** (4 * self.octaves.astype(np.float32)))
-        return (weights / weights.mean()).astype(np.float32)
+    # sample (2k+1)x(2k+1) patches around each keypoint, compute depth variance
+        H, W = aux_depth.shape
+        k = 2  # patch radius
+        pix = self.kps.astype(int)  # [N, 2] (x, y)
+        weights = np.empty(len(pix), dtype=np.float32)
+        for i, (x, y) in enumerate(pix):
+            x0, x1 = max(0, x-k), min(W, x+k+1)
+            y0, y1 = max(0, y-k), min(H, y+k+1)
+            patch = aux_depth[y0:y1, x0:x1]
+            valid = patch[(patch > 0) & np.isfinite(patch)]
+            if len(valid) < 4:
+                weights[i] = 0.0   # or some small value
+            else:
+                sigma2 = np.var(valid)
+                weights[i] = (sigma2 + 1e-3)  # inverse-variance
+        # normalize to mean 1 so it's a modifier, not a magnitude shifter
+        return (weights / max(weights.mean(), 1e-6)).astype(np.float32)
 
 
     def compute_stereo_from_rgbd(self, kps_data, depth):

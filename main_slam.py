@@ -334,7 +334,7 @@ if __name__ == "__main__":
                     img = dataset.getImageColor(img_id)
                     depth = dataset.getDepth(img_id)
                     aux_depth = None
-                    if dataset.type == DatasetType.TARTANAIR:
+                    if dataset.type in (DatasetType.TARTANAIR, DatasetType.ETH3D) and Parameters.kUseDepthUncertaintyInOptimization:
                         aux_depth = dataset.getDepthAux(img_id)
                     img_right = (
                         dataset.getImageColorRight(img_id)

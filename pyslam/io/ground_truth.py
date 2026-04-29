@@ -68,6 +68,7 @@ class GroundTruthType(SerializableEnum):
     SEVEN_SCENES = 10
     NEURAL_RGBD = 11
     ROVER = 12
+    ETH3D = 13
 
 
 def groundtruth_factory(settings):
@@ -128,6 +129,12 @@ def groundtruth_factory(settings):
         associations = settings["associations"]
         return RoverGroundTruth(
             path, name, camera_name, associations, start_frame_id, type=GroundTruthType.ROVER
+        )
+    if type == "eth3d":
+        if "associations" in settings:
+            associations = settings["associations"]
+        return Eth3dGroundTruth(
+            path, name, associations, start_frame_id, type=GroundTruthType.ETH3D
         )
     if type == "video" or type == "folder":
         if "groundtruth_file" in settings:
@@ -1737,6 +1744,106 @@ class RoverGroundTruth(GroundTruth):
                 self.associations_data = [line.strip().split() for line in self.associations_data]
             if self.associations_data is None:
                 sys.exit("ERROR [RoverGroundTruth] while reading associations file!")
+
+        associations_file = base_path + "/gt_associations.json"
+        if not os.path.exists(associations_file):
+            # Printer.orange("Computing groundtruth associations (one-time operation, results will be saved)...")
+            if len(self.associations_data) == 0 or len(self.data) == 0:
+                Printer.orange(
+                    f"WARNING: you have #associations = {len(self.associations_data)} and #groundtruth samples = {len(self.data)}"
+                )
+            self.association_matches = self.associate(self.associations_data, self.data)
+            # save associations
+            with open(associations_file, "w") as f:
+                json.dump(self.association_matches, f)
+        else:
+            with open(associations_file, "r") as f:
+                data = json.load(f)
+                self.association_matches = {int(k): v for k, v in data.items()}
+
+    def getDataLine(self, frame_id):
+        return self.data[self.association_matches[frame_id][0]]
+
+    # return timestamp,x,y,z,scale
+    def getTimestampPositionAndAbsoluteScale(self, frame_id):
+        frame_id += self.start_frame_id
+        try:
+            ss = self.getDataLine(frame_id - 1)
+            x_prev = self.scale * float(ss[1])
+            y_prev = self.scale * float(ss[2])
+            z_prev = self.scale * float(ss[3])
+        except:
+            x_prev, y_prev, z_prev = None, None, None
+        ss = self.getDataLine(frame_id)
+        timestamp = float(ss[0])
+        x = self.scale * float(ss[1])
+        y = self.scale * float(ss[2])
+        z = self.scale * float(ss[3])
+        if x_prev is None:
+            abs_scale = 1
+        else:
+            abs_scale = np.sqrt((x - x_prev) ** 2 + (y - y_prev) ** 2 + (z - z_prev) ** 2)
+        return timestamp, x, y, z, abs_scale
+
+    # return timestamp, x,y,z, qx,qy,qz,qw, scale
+    def getTimestampPoseAndAbsoluteScale(self, frame_id):
+        frame_id += self.start_frame_id
+        try:
+            ss = self.getDataLine(frame_id - 1)
+            x_prev = self.scale * float(ss[1])
+            y_prev = self.scale * float(ss[2])
+            z_prev = self.scale * float(ss[3])
+        except:
+            x_prev, y_prev, z_prev = None, None, None
+        ss = self.getDataLine(frame_id)
+        timestamp = float(ss[0])
+        x = self.scale * float(ss[1])
+        y = self.scale * float(ss[2])
+        z = self.scale * float(ss[3])
+        qx = float(ss[4])
+        qy = float(ss[5])
+        qz = float(ss[6])
+        qw = float(ss[7])
+        if x_prev is None:
+            abs_scale = 1
+        else:
+            abs_scale = np.sqrt((x - x_prev) ** 2 + (y - y_prev) ** 2 + (z - z_prev) ** 2)
+        return timestamp, x, y, z, qx, qy, qz, qw, abs_scale
+
+
+class Eth3dGroundTruth(GroundTruth):
+    def __init__(self, path, name, associations=None, start_frame_id=0, type=GroundTruthType.ETH3D):
+        super().__init__(path, name, associations, start_frame_id, type)
+        self.scale = kScaleTum
+        self.filename = (
+            path + "/" + name + "/" + "groundtruth.txt"
+        )  # N.B.: this may depend on how you deployed the groundtruth files
+        if not os.path.isfile(self.filename):
+            self.filename = path + "/" + name + "/" + "gt.freiburg"  # For ICL-NUIM support
+        self.associations_path = (
+            path + "/" + name + "/" + associations
+        )  # N.B.: this may depend on how you name the associations file
+
+        if not os.path.isfile(self.filename):
+            error_message = f"ERROR: [Eth3dGroundTruth] Groundtruth file not found: {self.filename}!"
+            Printer.red(error_message)
+            sys.exit(error_message)
+
+        base_path = os.path.dirname(self.filename)
+        print("[Eth3dGroundTruth] base_path: ", base_path)
+
+        with open(self.filename) as f:
+            self.data = f.readlines()[1:]  # skip the first row, which is only comment
+            self.data = [line.strip().split() for line in self.data]
+            self.data = np.ascontiguousarray(self.data)
+        if self.data is None:
+            sys.exit("ERROR [Eth3dGroundTruth] while reading groundtruth file!")
+        if self.associations_path is not None:
+            with open(self.associations_path) as f:
+                self.associations_data = f.readlines()
+                self.associations_data = [line.strip().split() for line in self.associations_data]
+            if self.associations_data is None:
+                sys.exit("ERROR [Eth3dGroundTruth] while reading associations file!")
 
         associations_file = base_path + "/gt_associations.json"
         if not os.path.exists(associations_file):
