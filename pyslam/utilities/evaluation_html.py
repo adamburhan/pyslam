@@ -94,7 +94,10 @@ html_template = """
 
 
 def escape_html_df(df: pd.DataFrame) -> pd.DataFrame:
-    return df.applymap(lambda x: html.escape(str(x)) if pd.notna(x) else "")
+#    return df.applymap(lambda x: html.escape(str(x)) if pd.notna(x) else "")
+    df = df.fillna("").astype(str)
+    df.apply(lambda col: col.map(html.escape))
+    return df
 
 
 def csv_list_to_html(

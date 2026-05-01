@@ -36,6 +36,7 @@ def escape_latex(text):
         .replace("}", r"\}")
         .replace("~", r"\textasciitilde{}")
         .replace("^", r"\textasciicircum{}")
+        .replace("±", r"$\pm$")
     )
 
 
@@ -94,7 +95,7 @@ latex_template = r"""
 
 
 def clean_non_ascii(df):
-    return df.map(lambda x: re.sub(r"[^\x20-\x7E]", "", str(x)))
+    return df.map(lambda x: re.sub(r"[^\x20-\x7E±]", "", str(x)))
 
 
 def compute_column_widths(
@@ -118,7 +119,7 @@ def compute_column_widths(
     base_cm = min(max_total_width_cm / total_chars, 0.25) if total_chars > 0 else 0.2
 
     # Compute width per column
-    min_width_cm = 0.8
+    min_width_cm = 1.5
     widths = [f"{max(round(cl * base_cm, 2), min_width_cm)}cm" for cl in col_lengths]
 
     return widths

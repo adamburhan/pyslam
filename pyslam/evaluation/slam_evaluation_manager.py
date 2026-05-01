@@ -297,7 +297,7 @@ class SlamEvaluationManager:
         Printer.bold(f"log_output_path: {log_output_path}")
         Printer.yellow(f"To see the progress run: $ tail -f {main_log_output_file}")
 
-        source_command = "source " + kRootFolder + "pyenv-activate.sh; "
+        source_command = "source " + os.path.join(kRootFolder, "pyenv-activate.sh") + "; "
         main_slam_path = os.path.join(kRootFolder, "main_slam.py")
         command = (
             source_command
@@ -480,7 +480,13 @@ class SlamEvaluationManager:
                             )
                     if len(it_values) > 0:
                         mean = np.mean(it_values)
-                        row.append(round(mean, precision))
+                        if len(it_values) > 1:
+                            std = np.std(it_values)
+                            row.append(
+                                f"{round(mean, precision)} ± {round(std, precision)}"
+                            )
+                        else:
+                            row.append(round(mean, precision))
                     else:
                         row.append("N/A")
                 else:

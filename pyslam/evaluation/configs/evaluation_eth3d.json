@@ -1,0 +1,284 @@
+{
+    "num_threads": 2, // Number of parallel threads (results may get worse with more threads)
+    "dataset_base_path": "/Volumes/T9/datasets/eth3d/training",
+    "dataset_type": "ETH3D_DATASET",
+    "number_of_runs_per_dataset": 5,
+    "sensor_type": "mono",
+    "datasets": [
+        {
+            "name": "cables_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "cables_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "cables_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "ceiling_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "ceiling_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "desk_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "desk_changing_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_dark",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_flashlight",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_global_light_changes_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_global_light_changes_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "einstein_global_light_changes_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "kidnap_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "kidnap_dark",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "large_loop_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_5",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_7",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_head",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "motion_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "planar_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "planar_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_5",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_dark",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "reflective_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "repetitive",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_bench",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_garden",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_house_loop",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_lab_room_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_lab_room_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_shake",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_7",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "vicon_light_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "vicon_light_2",
+            "settings_path": "settings/ETH3D.yaml"
+        }
+    ],
+    "presets": [
+        {
+            "name": "baseline"
+        }
+        //   {
+        //     "name": "root_sift",
+        //       "settings": {
+        //         "FeatureTrackerConfig.name": "ROOT_SIFT",
+        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
+        //       }
+        //     },
+        //     {
+        //     "name": "superpoint",
+        //       "settings": {
+        //         "FeatureTrackerConfig.name": "SUPERPOINT",
+        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
+        //       }
+        //     }      
+    ],
+    // "common_parameters": {
+    //   "config": {
+    //     "GLOBAL_PARAMETERS": {
+    //       "kNumMinPointsForNewKf": 15
+    //     }
+    //   },
+    //   "settings": {
+    //     "FeatureTrackerConfig.nFeatures": 1000
+    //   }
+    // },
+    "output_path": "kitti",
+    "saved_trajectory_format_type": "kitti"
+}

@@ -2,7 +2,7 @@ DATASET:
   # select your dataset (decomment only one of the following lines) 
   # type: EUROC_DATASET  
   #type: KITTI_DATASET
-  #type: TUM_DATASET
+  type: TUM_DATASET
   #type: ICL_NUIM_DATASET
   #type: REPLICA_DATASET
   # type: TARTANAIR_DATASET
@@ -17,7 +17,7 @@ DATASET:
   #type: MCAP_DATASET
   #type: FOLDER_DATASET
   #type: LIVE_DATASET  # Not recommended for current development stage
-  type: ETH3D_DATASET
+  # type: ETH3D_DATASET
 
 
 KITTI_DATASET:
@@ -37,10 +37,10 @@ KITTI_DATASET:
 
 TUM_DATASET:
   type: tum
-  sensor_type: rgbd # Here, 'sensor_type' can be 'mono' or 'rgbd'
-  base_path: /home/luigi/Work/datasets/rgbd_datasets/tum
+  sensor_type: mono # Here, 'sensor_type' can be 'mono' or 'rgbd'
+  base_path: /Volumes/T9/datasets/tum-rgbd
   #
-  name: rgbd_dataset_freiburg3_long_office_household
+  name: rgbd_dataset_freiburg3_structure_notexture_far
   settings: settings/TUM3.yaml # do not forget to correctly set the corresponding camera settings file    
   #
   #name: rgbd_dataset_freiburg1_xyz 
@@ -96,7 +96,7 @@ EUROC_DATASET:
   settings_stereo: settings/EuRoC_stereo.yaml
   associations: auto
   groundtruth_file: auto
-  start_frame_id: 1400
+  start_frame_id: 0
 
 
 REPLICA_DATASET:

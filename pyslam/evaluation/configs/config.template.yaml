@@ -131,6 +131,16 @@ ROS2BAG_DATASET:
   fps: %dataset_fps%                    # desired rate of the dataset
 
 
+ETH3D_DATASET:
+  type: eth3d
+  sensor_type: %sensor_type% # Here, 'sensor_type' can be 'mono' or 'rgbd'
+  base_path: %dataset_base_path%
+  name: %dataset_name%
+  settings: %settings_path% # do not forget to correctly set the corresponding camera settings file 
+  associations: associated.txt
+  groundtruth_file: auto
+  start_frame_id: %start_frame_id%
+
 SYSTEM_STATE: 
   # This section is used for saving and reloading the system state: Sparse map + Loop closing state  
   load_state: False                # flag to enable SLAM state reloading (map state + loop closing state) and relocalization
