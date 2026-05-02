@@ -272,6 +272,16 @@ class SlamEvaluationManager:
         current_config_file = remove_unused_datasets(current_config_file)
         # print(f'current_config_file: {current_config_file}')
 
+        # Deep-merge preset["config"] (and common_parameters["config"]) into the generated
+        # run config so that GLOBAL_PARAMETERS overrides defined in the eval JSON take effect
+        # at runtime via Config.get_and_set_global_parameters().
+        preset_run_config = merge_dicts(
+            preset_common_parameters.get("config", {}) if preset_common_parameters else {},
+            preset.get("config", {}),
+        )
+        if preset_run_config:
+            current_config_file = merge_dicts(current_config_file, preset_run_config)
+
         # Save the config file to be used
         current_config_file = yaml.dump(
             current_config_file, sort_keys=False

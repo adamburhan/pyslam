@@ -1618,4 +1618,8 @@ class Eth3dDataset(TumDataset):
             return None
         file = self.base_path + self.associations_data[f_id].strip().split()[3]
         d = cv2.imread(file, cv2.IMREAD_UNCHANGED)
-        return None if d is None else (d.astype(np.float32) / 5000.0)
+        if d is None:
+            return None
+        d_m = d.astype(np.float32) / 5000.0  
+        d_m[d == 0] = np.nan  # Set invalid depth values (0) to NaN
+        return d_m
