@@ -59,9 +59,9 @@ export WITH_PYTHON_INTERP_CHECK=ON  # in order to detect the correct python inte
 # 7. build and install thirdparty 
 . $SCRIPTS_DIR/install_thirdparty.sh             # use . in order to inherit python env configuration and other environment vars 
 
-# 8. install tools for semantics
-# HACK: Moved the install of the semantic tools at the end of the install process to avoid some conflict issues among the deps
-$SCRIPTS_DIR/install_pip3_semantics.sh  # must use "$SCRIPTS_DIR/"
+# # 8. install tools for semantics
+# # HACK: Moved the install of the semantic tools at the end of the install process to avoid some conflict issues among the deps
+# $SCRIPTS_DIR/install_pip3_semantics.sh  # must use "$SCRIPTS_DIR/"
 
 # 9. outliers under macos
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -76,13 +76,13 @@ fi
 # 10. outliers 
 pip install "pyarrow<19"  # See https://github.com/luigifreda/pyslam/issues/193
 #pip install -U "protobuf>=5,<6" # For solving final issues with contextdesc
-$SCRIPTS_DIR/install_protobuf.sh
+#$SCRIPTS_DIR/install_protobuf.sh
 # NOTE: There can be possible issues with delf and protobuf too. To solve them, run the following command:
 #   cd <pyslam_root>/thirdparty/tensorflow_models/research/delf
 #   protoc -I=. --python_out=. delf/protos/*.proto
 pip install "wandb>=0.25.1,<0.26" --force-reinstall
 # Verify the detectron2 C++ extension against the installed torch stack and rebuild if needed.
-$SCRIPTS_DIR/detectron_check.sh
+#$SCRIPTS_DIR/detectron_check.sh
 pip install "numpy<2" --force-reinstall
 
 cd "$STARTING_DIR"
