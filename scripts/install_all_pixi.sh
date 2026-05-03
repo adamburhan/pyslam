@@ -49,7 +49,7 @@ $SCRIPTS_DIR/install_system_packages.sh
 pip install -e .
 
 # 3. set up git submodules (we need to install gdown before this) 
-$SCRIPTS_DIR/install_git_modules.sh 
+#$SCRIPTS_DIR/install_git_modules.sh 
 
 # 4. configure the environment for pixi
 PYTHON_EXECUTABLE=$(which python)

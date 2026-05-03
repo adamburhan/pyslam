@@ -46,7 +46,7 @@ $SCRIPTS_DIR/pyenv-venv-create.sh  # NOTE: Keep the use of "$SCRIPTS_DIR/". It s
 . "$ROOT_DIR"/pyenv-activate.sh   
 
 # 4. set up git submodules (we need to install gdown before this) 
-$SCRIPTS_DIR/install_git_modules.sh 
+#$SCRIPTS_DIR/install_git_modules.sh 
 
 export WITH_PYTHON_INTERP_CHECK=ON  # in order to detect the correct python interpreter 
 

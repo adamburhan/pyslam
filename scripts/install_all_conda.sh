@@ -52,7 +52,7 @@ if [ "$CONDA_DEFAULT_ENV" != "$ENV_NAME" ]; then
 fi
 
 # 4. set up git submodules  
-$SCRIPTS_DIR/install_git_modules.sh 
+#$SCRIPTS_DIR/install_git_modules.sh 
 
 export WITH_PYTHON_INTERP_CHECK=ON  # in order to detect the correct python interpreter 
 
