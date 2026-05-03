@@ -155,16 +155,16 @@ cd $ROOT_DIR
 #     cd $ROOT_DIR
 # fi 
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/gtsam ..."
-# $SCRIPTS_DIR/install_gtsam.sh $EXTERNAL_OPTIONS
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/gtsam ..."
+$SCRIPTS_DIR/install_gtsam.sh $EXTERNAL_OPTIONS
 
-# cd $ROOT_DIR
+cd $ROOT_DIR
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/ros2_pybindings ..."
-# cd thirdparty/ros2_pybindings
-# ./build.sh $EXTERNAL_OPTIONS
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/ros2_pybindings ..."
+cd thirdparty/ros2_pybindings
+./build.sh $EXTERNAL_OPTIONS
 
 # cd $ROOT_DIR
 
