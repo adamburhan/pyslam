@@ -5,46 +5,46 @@
     "number_of_runs_per_dataset": 1,
     "sensor_type": "mono",
     "datasets": [
-        // {
-        //     "name": "cables_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // // },
+        {
+            "name": "cables_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
         {
             "name": "cables_2",
             "settings_path": "settings/ETH3D.yaml"
         },
-        // {
-        //     "name": "cables_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "camera_shake_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "camera_shake_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "camera_shake_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "ceiling_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "ceiling_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "desk_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "desk_changing_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
+        {
+            "name": "cables_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "camera_shake_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "ceiling_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "ceiling_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "desk_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "desk_changing_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
         // {
         //     "name": "einstein_1",
         //     "settings_path": "settings/ETH3D.yaml"
@@ -85,170 +85,170 @@
         //     "name": "large_loop_1",
         //     "settings_path": "settings/ETH3D.yaml"
         // },
-        // {
-        //     "name": "mannequin_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_4",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_5",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_7",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_face_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_face_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_face_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "mannequin_head",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "motion_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "planar_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "planar_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_4",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_5",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_dark",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_scene_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_scene_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "plant_scene_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "reflective_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "repetitive",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sfm_bench",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sfm_garden",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sfm_house_loop",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sfm_lab_room_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sfm_lab_room_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_4",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_dark_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_dark_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_dark_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "sofa_shake",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "table_3",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "table_4",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "table_7",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "vicon_light_1",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // },
-        // {
-        //     "name": "vicon_light_2",
-        //     "settings_path": "settings/ETH3D.yaml"
-        // }
+        {
+            "name": "mannequin_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_5",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_7",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_face_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "mannequin_head",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "motion_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "planar_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "planar_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_5",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_dark",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "plant_scene_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "reflective_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "repetitive",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_bench",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_garden",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_house_loop",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_lab_room_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sfm_lab_room_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_2",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_dark_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "sofa_shake",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_3",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_4",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "table_7",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "vicon_light_1",
+            "settings_path": "settings/ETH3D.yaml"
+        },
+        {
+            "name": "vicon_light_2",
+            "settings_path": "settings/ETH3D.yaml"
+        }
     ],
     "presets": [
         {
@@ -259,7 +259,7 @@
             "config": {
                 "GLOBAL_PARAMETERS": {
                     "kUseDepthUncertaintyInOptimization": true,
-                    "lambda_depth_weight": 1.0
+                    "lambda_depth_weight": 0.1
                 }
             }
         },
@@ -268,28 +268,28 @@
             "config": {
                 "GLOBAL_PARAMETERS": {
                     "kUseDepthUncertaintyInOptimization": true,
+                    "lambda_depth_weight": 1.0
+                }
+            }
+        },
+        {
+            "name": "depth_uncertainty_weighting3",
+            "config": {
+                "GLOBAL_PARAMETERS": {
+                    "kUseDepthUncertaintyInOptimization": true,
                     "lambda_depth_weight": 10.0
                 }
             }
         },
-        // {
-        //     "name": "depth_uncertainty_weighting3",
-        //     "config": {
-        //         "GLOBAL_PARAMETERS": {
-        //             "kUseDepthUncertaintyInOptimization": true,
-        //             "lambda_depth_weight": 100.0
-        //         }
-        //     }
-        // },
-        // {
-        //     "name": "depth_uncertainty_weighting4",
-        //     "config": {
-        //         "GLOBAL_PARAMETERS": {
-        //             "kUseDepthUncertaintyInOptimization": true,
-        //             "lambda_depth_weight": 0.001
-        //         }
-        //     }
-        // },
+        {
+            "name": "depth_uncertainty_weighting4",
+            "config": {
+                "GLOBAL_PARAMETERS": {
+                    "kUseDepthUncertaintyInOptimization": true,
+                    "lambda_depth_weight": 100.0
+                }
+            }
+        },
         // {
         //     "name": "depth_uncertainty_weighting5",
         //     "config": {

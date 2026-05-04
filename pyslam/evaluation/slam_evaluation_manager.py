@@ -459,7 +459,10 @@ class SlamEvaluationManager:
                     dataset_name = dataset["name"]
                     if dataset_name in metrics[preset_name]:
                         for iteration_idx in range(number_of_runs_per_dataset):
-                            if metric_name in metrics[preset_name][dataset_name][iteration_idx]:
+                            if (
+                                iteration_idx in metrics[preset_name][dataset_name]
+                                and metric_name in metrics[preset_name][dataset_name][iteration_idx]
+                            ):
                                 is_metric_available = True
                                 break
         if not is_metric_available:
@@ -484,7 +487,10 @@ class SlamEvaluationManager:
                 if preset_name in metrics and dataset_name in metrics[preset_name]:
                     it_values = []
                     for iteration_idx in range(number_of_runs_per_dataset):
-                        if metric_name in metrics[preset_name][dataset_name][iteration_idx]:
+                        if (
+                            iteration_idx in metrics[preset_name][dataset_name]
+                            and metric_name in metrics[preset_name][dataset_name][iteration_idx]
+                        ):
                             it_values.append(
                                 metrics[preset_name][dataset_name][iteration_idx][metric_name]
                             )
@@ -515,7 +521,8 @@ class SlamEvaluationManager:
                     for dataset in datasets
                     if preset_name in metrics and dataset["name"] in metrics[preset_name]
                     for iteration_idx in range(number_of_runs_per_dataset)
-                    if metric_name in metrics[preset_name][dataset["name"]][iteration_idx]
+                    if iteration_idx in metrics[preset_name][dataset["name"]]
+                    and metric_name in metrics[preset_name][dataset["name"]][iteration_idx]
                     and not math.isnan(
                         metrics[preset_name][dataset["name"]][iteration_idx][metric_name]
                     )

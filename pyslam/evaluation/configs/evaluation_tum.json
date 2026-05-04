@@ -47,34 +47,34 @@
     //   "name": "rgbd_dataset_freiburg3_long_office_household",
     //   "settings_path": "settings/TUM3.yaml"
     // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_nostructure_notexture_far",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_nostructure_notexture_near_withloop",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_nostructure_texture_far",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_nostructure_texture_near_withloop",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_structure_notexture_far",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_structure_notexture_near",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
-    // {
-    //   "name": "rgbd_dataset_freiburg3_structure_texture_far",
-    //   "settings_path": "settings/TUM3.yaml"
-    // },
+    {
+      "name": "rgbd_dataset_freiburg3_nostructure_notexture_far",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_nostructure_notexture_near_withloop",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_nostructure_texture_far",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_nostructure_texture_near_withloop",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_structure_notexture_far",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_structure_notexture_near",
+      "settings_path": "settings/TUM3.yaml"
+    },
+    {
+      "name": "rgbd_dataset_freiburg3_structure_texture_far",
+      "settings_path": "settings/TUM3.yaml"
+    },
     {
       "name": "rgbd_dataset_freiburg3_structure_texture_near",
       "settings_path": "settings/TUM3.yaml"
