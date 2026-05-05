@@ -1,8 +1,8 @@
 {
   "num_threads": 2, // Number of parallel threads (results may get worse with more threads)
-  "dataset_base_path": "/Volumes/T9/datasets/tum-rgbd",
+  "dataset_base_path": "/home/adam/datasets/tum-rgbd",
   "dataset_type": "TUM_DATASET",
-  "number_of_runs_per_dataset": 15,
+  "number_of_runs_per_dataset": 10,
   "sensor_type": "mono",
   "datasets": [
     // Just keeping the one considered in ORBSLAM2
@@ -84,7 +84,43 @@
   "presets": [
     {
       "name": "baseline"
-    }
+    },
+    {
+      "name": "depth_uncertainty_weighting1",
+      "config": {
+        "GLOBAL_PARAMETERS": {
+          "kUseDepthUncertaintyInOptimization": true,
+          "lambda_depth_weight": 0.1
+        }
+      }
+    },
+    {
+      "name": "depth_uncertainty_weighting2",
+      "config": {
+        "GLOBAL_PARAMETERS": {
+          "kUseDepthUncertaintyInOptimization": true,
+          "lambda_depth_weight": 1.0
+        }
+      }
+    },
+    {
+      "name": "depth_uncertainty_weighting3",
+      "config": {
+        "GLOBAL_PARAMETERS": {
+          "kUseDepthUncertaintyInOptimization": true,
+          "lambda_depth_weight": 10.0
+        }
+      }
+    },
+    {
+      "name": "depth_uncertainty_weighting4",
+      "config": {
+        "GLOBAL_PARAMETERS": {
+          "kUseDepthUncertaintyInOptimization": true,
+          "lambda_depth_weight": 100.0
+        }
+      }
+    },
   ],
   // "common_parameters": {
   //   "config": {
@@ -96,6 +132,6 @@
   //     "FeatureTrackerConfig.nFeatures": 1000
   //   }
   // },
-  "output_path": "tum",
+  "output_path": "/home/adam/datasets/tum-rgbd/pyslam_outputs",
   "saved_trajectory_format_type": "kitti"
 }

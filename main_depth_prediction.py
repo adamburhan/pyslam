@@ -71,7 +71,7 @@ if __name__ == "__main__":
     FeatureTrackerShared.set_feature_tracker(feature_tracker)
 
     # Select your depth estimator (see the file depth_estimator_configs.py).
-    depth_estimator_type = DepthEstimatorType.DEPTH_PRO
+    depth_estimator_type = DepthEstimatorType.DEPTH_ANYTHING_V2
     min_depth = 0
     max_depth = 50 if dataset.environmentType() == DatasetEnvironmentType.OUTDOOR else 10
     precision = torch.float16

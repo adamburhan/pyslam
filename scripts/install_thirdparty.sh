@@ -182,22 +182,22 @@ cd thirdparty/ros2_pybindings
 #     source get_pretrained_models.sh   # Files will be downloaded to `ml_depth_pro/checkpoints` directory. 
 # fi
 
-# cd $ROOT_DIR
+cd $ROOT_DIR
 
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/depth_anything_v2 ..."
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/depth_anything_v2 ..."
 
-# cd thirdparty
-# if [ ! -d depth_anything_v2 ]; then
-#     git clone https://github.com/DepthAnything/Depth-Anything-V2.git depth_anything_v2
-#     cd depth_anything_v2
-#     #git checkout 31dc97708961675ce6b3a8d8ffa729170a4aa273 # use this commit if you hit any problems
+cd thirdparty
+if [ ! -d depth_anything_v2 ]; then
+    git clone https://github.com/DepthAnything/Depth-Anything-V2.git depth_anything_v2
+    cd depth_anything_v2
+    #git checkout 31dc97708961675ce6b3a8d8ffa729170a4aa273 # use this commit if you hit any problems
 
-#     git apply ../depth_anything_v2.patch
+    git apply ../depth_anything_v2.patch
 
-#     ./download_metric_models.py
-# fi
+    ./download_metric_models.py
+fi
 
 # cd $ROOT_DIR
 
@@ -206,55 +206,55 @@ cd thirdparty/ros2_pybindings
 # print_blue "Configuring and building thirdparty/depth_anything_v3 ..."
 # $SCRIPTS_DIR/install_depth_anything_v3.sh
 
-# cd $ROOT_DIR
+cd $ROOT_DIR
 
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/raft_stereo ..."
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/raft_stereo ..."
 
-# cd thirdparty
-# if [ ! -d raft_stereo ]; then
-#     git clone https://github.com/princeton-vl/RAFT-Stereo.git raft_stereo
-#     cd raft_stereo
-#     #git checkout 6068c1a26f84f8132de10f60b2bc0ce61568e085 # use this commit if you hit any problems
+cd thirdparty
+if [ ! -d raft_stereo ]; then
+    git clone https://github.com/princeton-vl/RAFT-Stereo.git raft_stereo
+    cd raft_stereo
+    #git checkout 6068c1a26f84f8132de10f60b2bc0ce61568e085 # use this commit if you hit any problems
 
-#     git apply ../raft_stereo.patch
+    git apply ../raft_stereo.patch
     
-#     ./download_models.sh
-# fi
+    ./download_models.sh
+fi
 
-# cd $ROOT_DIR
+cd $ROOT_DIR
 
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/crestereo ..."
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/crestereo ..."
 
-# cd thirdparty
-# if [ ! -d crestereo ]; then
-#     git clone https://github.com/megvii-research/CREStereo.git crestereo
-#     cd crestereo
-#     #git checkout ad3a1613bdedd88b93247e5f002cb7c80799762d # use this commit if you hit any problems
+cd thirdparty
+if [ ! -d crestereo ]; then
+    git clone https://github.com/megvii-research/CREStereo.git crestereo
+    cd crestereo
+    #git checkout ad3a1613bdedd88b93247e5f002cb7c80799762d # use this commit if you hit any problems
 
-#     git apply ../crestereo.patch
+    git apply ../crestereo.patch
     
-#     ./download_models.py
-# fi
+    ./download_models.py
+fi
 
-# cd $ROOT_DIR
+cd $ROOT_DIR
 
-# print_blue "=================================================================="
-# print_blue "Configuring and building thirdparty/crestereo_pytorch ..."
+print_blue "=================================================================="
+print_blue "Configuring and building thirdparty/crestereo_pytorch ..."
 
-# cd thirdparty
-# if [ ! -d crestereo_pytorch ]; then
-#     git clone https://github.com/ibaiGorordo/CREStereo-Pytorch.git crestereo_pytorch
-#     cd crestereo_pytorch
-#     #git checkout b6c7a9fe8dc2e9e56ba7b96f4677312309282d15 # use this commit if you hit any problems
+cd thirdparty
+if [ ! -d crestereo_pytorch ]; then
+    git clone https://github.com/ibaiGorordo/CREStereo-Pytorch.git crestereo_pytorch
+    cd crestereo_pytorch
+    #git checkout b6c7a9fe8dc2e9e56ba7b96f4677312309282d15 # use this commit if you hit any problems
 
-#     git apply ../crestereo_pytorch.patch
+    git apply ../crestereo_pytorch.patch
     
-#     ./download_models.py
-# fi
+    ./download_models.py
+fi
 
 # cd $ROOT_DIR
 

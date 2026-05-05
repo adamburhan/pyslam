@@ -564,7 +564,7 @@ class Frame(FrameBase):
                 # compute per-keypoint depth-uncertainty weights from auxiliary depth
                 # (monocular uncertainty-weighting ablation: GT or predicted depth map)
                 if aux_depth is not None:
-                    self.kps_depth_weight = self._compute_kps_depth_weight(aux_depth, )
+                    self.kps_depth_weight = self._compute_kps_depth_weight(aux_depth)
 
             self.ensure_contiguous_arrays()
 

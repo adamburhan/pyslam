@@ -2,7 +2,7 @@ DATASET:
   # select your dataset (decomment only one of the following lines) 
   # type: EUROC_DATASET  
   #type: KITTI_DATASET
-  type: TUM_DATASET
+  # type: TUM_DATASET
   #type: ICL_NUIM_DATASET
   #type: REPLICA_DATASET
   # type: TARTANAIR_DATASET
@@ -17,7 +17,7 @@ DATASET:
   #type: MCAP_DATASET
   #type: FOLDER_DATASET
   #type: LIVE_DATASET  # Not recommended for current development stage
-  # type: ETH3D_DATASET
+  type: ETH3D_DATASET
 
 
 KITTI_DATASET:

@@ -237,7 +237,7 @@ if __name__ == "__main__":
         Parameters.kVolumetricIntegrationUseDepthEstimator = False  # Just use this depth estimator in the front-end (This is not a choice, we are imposing it for avoiding computing the depth twice)
         # Select your depth estimator (see the file depth_estimator_factory.py)
         # DEPTH_ANYTHING_V2, DEPTH_ANYTHING_V3, DEPTH_PRO, DEPTH_RAFT_STEREO, DEPTH_SGBM, etc.
-        depth_estimator_type = DepthEstimatorType.DEPTH_PRO
+        depth_estimator_type = DepthEstimatorType.DEPTH_ANYTHING_V2
         max_depth = 20
         depth_estimator = depth_estimator_factory(
             depth_estimator_type=depth_estimator_type,
