@@ -233,7 +233,10 @@ if __name__ == "__main__":
 
     # Select your depth estimator in the front-end (EXPERIMENTAL, WIP)
     depth_estimator = None
-    if Parameters.kUseDepthEstimatorInFrontEnd:
+    if Parameters.kUseDepthEstimatorInFrontEnd or (
+        Parameters.kUseDepthUncertaintyInOptimization
+        and Parameters.kDepthUncertaintySource == "est"
+    ):
         Parameters.kVolumetricIntegrationUseDepthEstimator = False  # Just use this depth estimator in the front-end (This is not a choice, we are imposing it for avoiding computing the depth twice)
         # Select your depth estimator (see the file depth_estimator_factory.py)
         # DEPTH_ANYTHING_V2, DEPTH_ANYTHING_V3, DEPTH_PRO, DEPTH_RAFT_STEREO, DEPTH_SGBM, etc.
@@ -333,9 +336,6 @@ if __name__ == "__main__":
                     print("..................................")
                     img = dataset.getImageColor(img_id)
                     depth = dataset.getDepth(img_id)
-                    aux_depth = None
-                    if dataset.type in (DatasetType.TARTANAIR, DatasetType.ETH3D) and Parameters.kUseDepthUncertaintyInOptimization:
-                        aux_depth = dataset.getDepthAux(img_id)
                     img_right = (
                         dataset.getImageColorRight(img_id)
                         if dataset.sensor_type == SensorType.STEREO
@@ -354,8 +354,30 @@ if __name__ == "__main__":
                     print(f"image: {img_id}, timestamp: {timestamp}, duration: {frame_duration}")
 
                     if img is not None:
+                        aux_depth = None
+                        if Parameters.kUseDepthUncertaintyInOptimization:
+                            src = Parameters.kDepthUncertaintySource
+                            if src == "gt":
+                                if dataset.type in (DatasetType.TARTANAIR, DatasetType.ETH3D):
+                                    aux_depth = dataset.getDepthAux(img_id)
+                                else:
+                                    Printer.yellow(
+                                        f"GT depth-uncertainty requested but dataset {dataset.type} has no getDepthAux; skipping."
+                                    )
+                            elif src == "est" and depth_estimator:
+                                depth_prediction, pts3d_prediction = depth_estimator.infer(
+                                    img, img_right
+                                )
+                                if Parameters.kDepthEstimatorRemoveShadowPointsInFrontEnd:
+                                    aux_depth = filter_shadow_points(depth_prediction)
+                                else:
+                                    aux_depth = depth_prediction
+                                if not args.headless:
+                                    depth_img = img_from_depth(depth_prediction, img_min=0, img_max=50)
+                                    # cv2.imshow("depth prediction", depth_img)
+                                    cv_image_viewer.draw(depth_img, "depth prediction")
 
-                        if depth is None and depth_estimator:
+                        if depth is None and depth_estimator and aux_depth is None:
                             depth_prediction, pts3d_prediction = depth_estimator.infer(
                                 img, img_right
                             )

@@ -313,7 +313,7 @@ ETH3D_DATASET:
   type: eth3d
   sensor_type: mono # Here, 'sensor_type' can be 'mono' or 'rgbd'
   base_path: /Volumes/T9/datasets/eth3d/training
-  name: 'mannequin_4'
+  name: 'table_7'
   settings: settings/ETH3D.yaml 
   associations: associated.txt
   groundtruth_file: auto

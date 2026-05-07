@@ -384,7 +384,8 @@ class Parameters:
     )
     kSemanticMappingDebugAndPrintToFile = True
     kUseSemanticsInOptimization = False  # To enable/disable the use of semantics in optimization (disabled by default, it's still very experimental)
-    kUseDepthUncertaintyInOptimization = False   # Scale reprojection-edge information by per-keypoint depth-uncertainty weights (populated from aux_depth in monocular mode)
+    kUseDepthUncertaintyInOptimization = True   # Scale reprojection-edge information by per-keypoint depth-uncertainty weights (populated from aux_depth in monocular mode)
+    kDepthUncertaintySource = "est"  # Source for aux_depth when uncertainty weighting is enabled: "gt" (dataset GT depth) or "est" (depth_estimator prediction)
     lambda_depth_weight = 1.0
     kSemanticMappingTimeoutPopKeyframe = 0.5  # [s]
     #

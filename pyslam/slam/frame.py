@@ -352,6 +352,7 @@ class FrameBase(object):
 class Frame(FrameBase):
     is_store_imgs = False  # to store images when needed for debugging or processing purposes
     is_compute_median_depth = False  # to compute median depth when needed
+    _aux_depth_units_checked = False  # one-shot sanity check for aux_depth units (see _compute_kps_depth_weight)
     feature_detect_and_compute_callback = None  # symmetric to C++
     feature_detect_and_compute_right_callback = None  # symmetric to C++
 
@@ -1122,6 +1123,41 @@ class Frame(FrameBase):
         Confident keypoints (sigma_d^2 ~ 0) keep weight ~ 1 (no change).
         """
 
+        # Normalize invalid pixels to NaN so downstream filters work correctly:
+        # some datasets use -1 (TartanAir sky) or 0 (raw Kinect) as a sentinel for invalid
+        # instead of NaN; if left in, the gradient term spikes around those regions and
+        # produces spurious low weights.
+        aux_depth = np.where(np.isfinite(aux_depth) & (aux_depth > 0), aux_depth, np.nan)
+
+        # One-shot sanity check: aux_depth is assumed to be metric depth in meters.
+        # Catches unit mismatches (inverse depth, disparity, mm) and sentinel-encoding
+        # mistakes that would silently invalidate the lambda_depth_weight calibration.
+        if not Frame._aux_depth_units_checked:
+            Frame._aux_depth_units_checked = True
+            valid = aux_depth[~np.isnan(aux_depth)]
+            if valid.size > 0:
+                p10, p50, p90 = np.percentile(valid, [10, 50, 90])
+                Printer.cyan(
+                    f"[aux_depth units check] valid pixels: {valid.size}, "
+                    f"percentiles 10/50/90 = {p10:.4f} / {p50:.4f} / {p90:.4f} "
+                    f"(min={valid.min():.4f}, max={valid.max():.4f})"
+                )
+                if p50 < 0.1:
+                    Printer.red(
+                        f"[aux_depth units check] median {p50:.4f} < 0.1 m -- "
+                        f"aux_depth is likely INVERSE DEPTH or DISPARITY, not metric meters. "
+                        f"lambda_depth_weight calibration will be wrong."
+                    )
+                elif p50 > 1000:
+                    Printer.red(
+                        f"[aux_depth units check] median {p50:.4f} -- "
+                        f"aux_depth values are very large; check whether units are millimeters."
+                    )
+                else:
+                    Printer.green(
+                        f"[aux_depth units check] median {p50:.4f} m looks like metric depth in meters."
+                    )
+
         def _sigma_to_ksize(sigma):
             """
             Compute kernel size for cv2.GaussianBlur from desired sigma.
@@ -1269,7 +1305,8 @@ class Frame(FrameBase):
         
         # Compute uncertainty map for the whole frame
         var_grad = depth_uncertainty_source1(aux_depth, sigma_smooth=1.5)
-        var_disc = depth_uncertainty_nan_proximity(aux_depth, window_size=7, sigma_default=0.10)
+        #var_disc = depth_uncertainty_nan_proximity(aux_depth, window_size=7, sigma_default=0.10)
+        var_disc = depth_uncertainty_source2(aux_depth, window_size=7)
         # or depth_uncertainty_source2 for clean depth
         var_total = np.where(np.isnan(var_grad) | np.isnan(var_disc), np.nan, var_grad + var_disc)
 
