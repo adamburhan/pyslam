@@ -114,6 +114,13 @@ ENV TORCH_HOME=/opt/pyslam-cache/torch \
     HF_HOME=/opt/pyslam-cache/huggingface
 RUN mkdir -p /opt/pyslam-cache/torch /opt/pyslam-cache/huggingface
 
+
+RUN pip install --force-reinstall --no-cache-dir \
+    "numpy>=1.26,<2" \
+    "pandas>=2.2,<2.3" \
+    "scipy>=1.10,<1.13"
+
+
 # ---------------------------------------------------------------------------
 # Smoke test at build time: if any of these imports fail, the build fails.
 # This catches the most common breakage (broken .pth path, missing .so,
