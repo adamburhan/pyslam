@@ -1,0 +1,131 @@
+# pyslam image for headless cluster execution via Apptainer.
+#
+# Design:
+#   - Builds as a fixed pseudo-user (HOME=/opt/pyslam-home, USER=builder) so
+#     pyenv and venv paths are stable and don't depend on the host user at
+#     runtime (Apptainer ignores Docker USER and uses the invoking user).
+#   - /home/builder symlinks to /opt/pyslam-home so pyslam's one hardcoded
+#     /home/$USER/.pyenv reference resolves correctly during build.
+#   - Bakes activation env vars (PATH, VIRTUAL_ENV, LD_LIBRARY_PATH, ...) so
+#     `apptainer exec` works without sourcing pyenv-activate.sh.
+#   - Redirects torch/HF model caches into the image so Mila compute nodes
+#     (no internet) don't try to download at runtime.
+#
+# Build:
+#   DOCKER_BUILDKIT=1 docker build -t pyslam:cluster -f Dockerfile_pyslam_cluster .
+#
+# Convert to Apptainer:
+#   docker save pyslam:cluster -o pyslam.tar
+#   apptainer build pyslam.sif docker-archive://pyslam.tar
+#
+# Runtime usage (bind your edited pyslam Python source over the inner package):
+#   apptainer exec --nv \
+#     --bind $HOME/pyslam/pyslam:/opt/pyslam/pyslam \
+#     --bind /network/datasets/tartanair:/data:ro \
+#     --bind $HOME/runs:/output \
+#     pyslam.sif python /opt/pyslam/your_script.py --config configs/foo.yaml
+
+FROM nvidia/cuda:12.1.1-devel-ubuntu20.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC
+
+# ---------------------------------------------------------------------------
+# System dependencies
+# Combined: pyenv build deps + pyslam C++ thirdparty build deps + minimal CLI
+# tools. Single RUN to keep the layer count low.
+# ---------------------------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates git curl wget rsync sudo lsb-release \
+    cmake build-essential clang ninja-build pkg-config \
+    make libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
+    llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev unzip \
+    python3 python3-pip python3-venv python3-tk python3-sdl2 \
+    doxygen libssh2-1-dev libudev-dev \
+    libprotobuf-dev libeigen3-dev libopencv-dev libsuitesparse-dev libglew-dev libhdf5-dev \
+    libboost-all-dev libtbb-dev libembree-dev \
+    qtbase5-dev qttools5-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# pyslam's install_all.sh tests for /.dockerenv to skip its sudo keep-alive
+# loop (which would block in a non-tty build).
+RUN touch /.dockerenv
+
+# ---------------------------------------------------------------------------
+# Fixed user + HOME for predictable install paths.
+# We don't actually USER-switch (we stay root for the build), but we set
+# $USER and $HOME so pyslam's scripts produce predictable paths.
+# /home/builder -> /opt/pyslam-home symlink handles pyenv-venv-create-linux.sh:56
+# which hardcodes /home/$USER/.pyenv (otherwise harmless but cleaner this way).
+# ---------------------------------------------------------------------------
+ENV HOME=/opt/pyslam-home \
+    USER=builder
+RUN mkdir -p /opt/pyslam-home && \
+    ln -s /opt/pyslam-home /home/builder
+
+# ---------------------------------------------------------------------------
+# CUDA arch selection for OpenCV build.
+# Default pyslam fallback covers 7.5 8.0 8.6 8.9 — fine for A100/L40S/RTX,
+# but NOT V100 (7.0) or H100 (9.0). Override here to cover Mila's full GPU
+# fleet. Trim this list if you know you'll only run on a subset; smaller
+# list = faster OpenCV build.
+# ---------------------------------------------------------------------------
+ENV CUDA_ARCH_BIN="7.0 7.5 8.0 8.6 8.9 9.0"
+
+# ---------------------------------------------------------------------------
+# Clone pyslam (your fork) and run the install pipeline.
+# Pinning to a commit is highly recommended for reproducibility — replace
+# <commit-sha> below with the actual SHA once you're happy with a version.
+# ---------------------------------------------------------------------------
+RUN git clone --recursive https://github.com/adamburhan/pyslam.git /opt/pyslam
+WORKDIR /opt/pyslam
+# RUN git -C /opt/pyslam checkout <commit-sha>
+
+# Run the install. Wrap in `set -e` to fail loudly if any step fails — the
+# upstream scripts don't enforce this and a half-installed image is the worst
+# possible outcome.
+RUN bash -e -c "./install_all.sh"
+
+# ---------------------------------------------------------------------------
+# Replicate `source pyenv-activate.sh` as baked-in env vars so non-interactive
+# `apptainer exec` works without sourcing anything.
+#
+# LD_LIBRARY_PATH entries: gtsam and opencv install dirs are required because
+# their .so files may not have correct RPATHs at runtime (see audit Q6).
+# CUDA libs first so the toolchain is found.
+# ---------------------------------------------------------------------------
+ENV VIRTUAL_ENV=/opt/pyslam-home/.python/venvs/pyslam \
+    PATH=/opt/pyslam-home/.python/venvs/pyslam/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    PYTHONPATH= \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:/opt/pyslam/thirdparty/gtsam_local/install/lib:/opt/pyslam/thirdparty/opencv/install/lib \
+    CUDA_HOME=/usr/local/cuda \
+    TF_CPP_MIN_LOG_LEVEL=3 \
+    PYTHONWARNINGS="ignore:::numpy.core.getlimits,ignore:pkg_resources is deprecated"
+
+# ---------------------------------------------------------------------------
+# Model cache redirection.
+# On Mila compute nodes there's no internet. Pre-warming the cache here means
+# torch.hub and HuggingFace from_pretrained() calls hit local files at runtime.
+# Add pre-download commands here for whatever models your runs need, e.g.:
+#   RUN python -c "import torch; torch.hub.load('intel-isl/MiDaS', 'DPT_Large')"
+# Leave commented out by default; add as needed.
+# ---------------------------------------------------------------------------
+ENV TORCH_HOME=/opt/pyslam-cache/torch \
+    HF_HOME=/opt/pyslam-cache/huggingface
+RUN mkdir -p /opt/pyslam-cache/torch /opt/pyslam-cache/huggingface
+
+# ---------------------------------------------------------------------------
+# Smoke test at build time: if any of these imports fail, the build fails.
+# This catches the most common breakage (broken .pth path, missing .so,
+# RPATH issues) before you waste time converting to SIF.
+# ---------------------------------------------------------------------------
+RUN python -c "import sys; print('python:', sys.executable); \
+import pyslam.config; \
+import torch; print('torch:', torch.__version__, 'cuda:', torch.cuda.is_available()); \
+import cv2; print('cv2:', cv2.__version__); \
+import g2o; print('g2o: ok'); \
+import gtsam; print('gtsam: ok'); \
+print('SMOKE TEST PASSED')"
+
+WORKDIR /opt/pyslam
+CMD ["bash"]

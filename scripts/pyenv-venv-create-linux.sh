@@ -53,7 +53,7 @@ cd $ENVS_PATH
 
 # actually create the virtual environment 
 if [ ! -d $ENV_PATH/bin ]; then 
-    export PATH="/home/$USER/.pyenv/bin:$PATH"  # this seems to be needed under docker (even if it seems redundant)
+    # export PATH="/home/$USER/.pyenv/bin:$PATH"  # this seems to be needed under docker (even if it seems redundant)
     print_blue "Creating virtual environment $ENV_NAME with python version $PYSLAM_PYTHON_VERSION under Linux"
     if [[ $version == *"22.04"* ]] ; then
         CC=clang pyenv install -v $PYSLAM_PYTHON_VERSION

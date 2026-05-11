@@ -1,0 +1,132 @@
+# from https://hub.docker.com/r/nvidia/cuda/tags?page=1&name=ubuntu20
+FROM nvidia/cuda:12.1.1-devel-ubuntu20.04 AS base
+
+# Arguments
+ARG user
+ARG uid
+ARG home
+ARG workspace
+ARG shell
+ARG nvidia_driver_version
+ARG container_name
+ARG timezone=Etc/UTC
+
+LABEL maintainer="luigifreda@gmail.com"
+
+ENV TZ=${timezone}
+
+################################
+
+RUN apt-get -y update 
+# && apt-get -y dist-upgrade 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata apt-utils keyboard-configuration
+RUN apt-get install -y git curl wget ca-certificates --no-install-recommends
+
+# Basic Utilities 
+RUN apt-get install -y screen tree sudo ssh synaptic aptitude gedit geany --no-install-recommends
+
+# Latest X11 / mesa GL
+RUN apt-get install -y mesa-utils --no-install-recommends
+
+# Dependencies required to build rviz
+RUN apt-get install -y libqt5core5a libqt5dbus5 libqt5gui5 --no-install-recommends
+
+# Additional development tools
+RUN apt-get install -y cmake build-essential git --no-install-recommends
+
+# Python 
+RUN apt-get install -y python3-pip
+RUN apt-get install -y python-is-python3  
+
+# ROS deps
+RUN apt-get install -y doxygen libssh2-1-dev libudev-dev --no-install-recommends 
+
+# pyslam stuff 
+RUN apt-get install -y rsync python3-sdl2 python3-tk \
+    libprotobuf-dev libeigen3-dev libopencv-dev libsuitesparse-dev libglew-dev --no-install-recommends
+RUN apt-get install -y libhdf5-dev --no-install-recommends   # needed when building h5py wheel from src is required (arm64)
+
+################################
+
+# from  http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration  (with nvidia-docker2)
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+# Make SSH available
+EXPOSE 22
+
+# Mount the user's home directory
+VOLUME "${home}"
+
+RUN useradd ${user} -m -s ${shell} -u ${uid} -G sudo,dialout
+
+# Clone user into docker image and set up X11 sharing 
+RUN \
+  echo "${user}:x:${uid}:${uid}:${user},,,:${home}:${shell}" >> /etc/passwd && \
+  echo "${user}:x:${uid}:" >> /etc/group && \
+  echo "${user} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${user}" && \
+  chmod 0440 "/etc/sudoers.d/${user}"
+
+#RUN echo "${user} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers 
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+RUN echo "${user}:docker" | chpasswd 
+# this allows to switch to user with $ su -
+RUN echo "root:docker" | chpasswd  
+
+# Switch to user
+USER "${user}"
+
+# This is required for sharing Xauthority
+ENV QT_X11_NO_MITSHM=1
+
+ENV CONTAINER_NAME="${container_name}"
+
+# Switch to the workspace
+WORKDIR ${workspace}
+
+RUN sudo chown -R ${user}:${user} ${home} && sudo chmod -R u+rwx ${home}
+COPY ./bashrc_add ${home}/bashrc_add
+RUN sudo touch ${home}/.bashrc && sudo chown ${user}:${user} ${home}/.bashrc && sudo chmod 644 ${home}/.bashrc
+RUN cat ${home}/bashrc_add >> "${home}/.bashrc"
+
+################################
+FROM base AS final
+
+# Install and configure git
+RUN sudo mkdir -p /home/${user}/.ssh && sudo chmod 0777 -R /home/${user}
+#RUN touch ~/.gitconfig && touch ~/.ssh/known_hosts
+RUN sudo touch ${home}/.gitconfig && sudo chown ${user}:${user} ${home}/.gitconfig && sudo chmod 644 ${home}/.gitconfig
+RUN sudo touch ${home}/.ssh/known_hosts && sudo chown ${user}:${user} ${home}/.ssh/known_hosts && sudo chmod 644 ${home}/.ssh/known_hosts
+#RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+RUN git config --global user.name "${user}"
+RUN git config --global user.email "${user}@${user}.com"
+RUN git config --global http.proxy ""
+RUN sudo git config --system --add safe.directory '*' # to avoid "detected dubious ownership" error
+
+# Install pyslam
+WORKDIR ${home}
+# the following to inform we are inside docker at build time 
+RUN sudo touch /.dockerenv 
+ENV USER=${user}
+RUN echo "Cloning and building pyslam repository in ${home} (with CUDA support)"
+RUN git clone --recursive --progress https://github.com/adamburhan/pyslam.git
+RUN cd pyslam && ./install_all.sh 
+RUN /bin/bash -c "echo 'source pyslam/pyenv-activate.sh' >> ~/.bashrc"
+
+
+# Create an entrypoint that dynamically sets XDG_RUNTIME_DIR
+RUN sudo touch /usr/local/bin/entrypoint.sh && sudo chmod 0777 /usr/local/bin/entrypoint.sh
+RUN printf '#!/bin/bash\n\
+export XDG_RUNTIME_DIR=/tmp/runtime-$(id -u)\n\
+mkdir -p "$XDG_RUNTIME_DIR"\n\
+chmod 700 "$XDG_RUNTIME_DIR"\n\
+exec "$@"\n' > /usr/local/bin/entrypoint.sh && \
+sudo chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["bash"]
