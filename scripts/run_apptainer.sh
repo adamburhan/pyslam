@@ -25,8 +25,8 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-: "${PYSLAM_SIF:=$SCRATCH/pyslam.sif}"
-: "${PYSLAM_MODEL_CACHE:=$SCRATCH/pyslam_cache}"
+: "${PYSLAM_SIF:=}"
+: "${PYSLAM_MODEL_CACHE:=}"
 : "${PYSLAM_SRC:=}"
 : "${PYSLAM_DATA:=}"
 : "${PYSLAM_OUTPUT:=}"
