@@ -62,7 +62,8 @@ mkdir -p \
 # prefixed with APPTAINERENV_ (and a few SLURM_* by default), so we set them
 # that way here.
 # ---------------------------------------------------------------------------
-export APPTAINERENV_HOME="$CONTAINER_HOME"
+# HOME is set via the --home flag below — APPTAINERENV_HOME is blocked by apptainer.
+# XDG_* are set as a safety net for libraries that honor XDG instead of HOME.
 export APPTAINERENV_XDG_CACHE_HOME="$CONTAINER_HOME/.cache"
 export APPTAINERENV_XDG_CONFIG_HOME="$CONTAINER_HOME/.config"
 export APPTAINERENV_NUMBA_CACHE_DIR="$EPHEMERAL_CACHE/numba"
