@@ -71,6 +71,6 @@
     //     "FeatureTrackerConfig.nFeatures": 1000
     //   }
     // },
-    "output_path": "kitti",
+    "output_path": "/home/adam/datasets/tartanair/pyslam_outputs",
     "saved_trajectory_format_type": "kitti"
 }
