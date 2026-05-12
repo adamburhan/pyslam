@@ -95,4 +95,6 @@ BINDS=(
 # ---------------------------------------------------------------------------
 # Run.
 # ---------------------------------------------------------------------------
-exec apptainer exec --nv --nvccli --no-home "${BINDS[@]}" "$PYSLAM_SIF" "$@"
+exec apptainer exec --nv --nvccli \
+  --home "$CONTAINER_HOME:$CONTAINER_HOME" \
+  "${BINDS[@]}" "$PYSLAM_SIF" "$@"
