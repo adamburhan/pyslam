@@ -87,4 +87,4 @@ BINDS=(
 # ---------------------------------------------------------------------------
 # Run.
 # ---------------------------------------------------------------------------
-exec apptainer exec --nv --cleanenv "${BINDS[@]}" "$PYSLAM_SIF" "$@"
+exec apptainer exec --nv --nvccli --cleanenv "${BINDS[@]}" "$PYSLAM_SIF" "$@"
