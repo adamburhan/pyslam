@@ -81,10 +81,10 @@ BINDS=(
   --bind "$PYSLAM_MODEL_CACHE:$PYSLAM_MODEL_CACHE"
 )
 [[ -n "$PYSLAM_SRC"    ]] && BINDS+=(--bind "$PYSLAM_SRC:/opt/pyslam/pyslam")
-[[ -n "$PYSLAM_DATA"   ]] && BINDS+=(--bind "$PYSLAM_DATA:/datasets")
+[[ -n "$PYSLAM_DATA"   ]] && BINDS+=(--bind "$PYSLAM_DATA:/home/adam/datasets")
 [[ -n "$PYSLAM_OUTPUT" ]] && BINDS+=(--bind "$PYSLAM_OUTPUT:/output")
 
 # ---------------------------------------------------------------------------
 # Run.
 # ---------------------------------------------------------------------------
-exec apptainer exec --nv --nvccli --cleanenv "${BINDS[@]}" "$PYSLAM_SIF" "$@"
+exec apptainer exec --nv --nvccli --no-home "${BINDS[@]}" "$PYSLAM_SIF" "$@"

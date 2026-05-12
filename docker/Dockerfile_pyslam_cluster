@@ -87,7 +87,7 @@ WORKDIR /opt/pyslam
 RUN bash -e -c "./install_all.sh"
 
 RUN mkdir -p /opt/pyslam/data
-COPY ../data/ /opt/pyslam/data/
+COPY data/ /opt/pyslam/data/
 
 # ---------------------------------------------------------------------------
 # Replicate `source pyenv-activate.sh` as baked-in env vars so non-interactive
