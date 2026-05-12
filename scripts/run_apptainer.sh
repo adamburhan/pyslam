@@ -42,21 +42,29 @@ fi
 
 # ---------------------------------------------------------------------------
 # Pre-create cache subdirs on the writable tiers.
+# CONTAINER_HOME is a writable HOME for the container, catching any library
+# that writes to ~/.config or ~/.cache without a dedicated env var (evo,
+# appdirs-based libs, python REPL history, etc.).
 # ---------------------------------------------------------------------------
 EPHEMERAL_CACHE="$SLURM_TMPDIR/pyslam_cache"
+CONTAINER_HOME="$PYSLAM_MODEL_CACHE/home"
 mkdir -p \
   "$EPHEMERAL_CACHE/numba" \
   "$EPHEMERAL_CACHE/torch_extensions" \
   "$EPHEMERAL_CACHE/matplotlib" \
   "$EPHEMERAL_CACHE/wandb" \
   "$PYSLAM_MODEL_CACHE/torch" \
-  "$PYSLAM_MODEL_CACHE/huggingface"
+  "$PYSLAM_MODEL_CACHE/huggingface" \
+  "$CONTAINER_HOME"
 
 # ---------------------------------------------------------------------------
 # Env vars to pass through to the container. Apptainer only forwards vars
 # prefixed with APPTAINERENV_ (and a few SLURM_* by default), so we set them
 # that way here.
 # ---------------------------------------------------------------------------
+export APPTAINERENV_HOME="$CONTAINER_HOME"
+export APPTAINERENV_XDG_CACHE_HOME="$CONTAINER_HOME/.cache"
+export APPTAINERENV_XDG_CONFIG_HOME="$CONTAINER_HOME/.config"
 export APPTAINERENV_NUMBA_CACHE_DIR="$EPHEMERAL_CACHE/numba"
 export APPTAINERENV_TORCH_EXTENSIONS_DIR="$EPHEMERAL_CACHE/torch_extensions"
 export APPTAINERENV_MPLCONFIGDIR="$EPHEMERAL_CACHE/matplotlib"
