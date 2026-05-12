@@ -1,0 +1,76 @@
+{
+    "num_threads": 2, // Number of parallel threads (results may get worse with more threads)
+    "dataset_base_path": "/home/adam/datasets/tartanair/office/Easy",
+    "dataset_type": "TARTANAIR_DATASET",
+    "number_of_runs_per_dataset": 1,
+    "sensor_type": "mono",
+    "datasets": [
+        {
+            "name": "P000",
+            "settings_path": "settings/TARTANAIR.yaml"
+        },
+    ],
+    "presets": [
+        {
+            "name": "baseline",
+            "config": {
+                "GLOBAL_PARAMETERS": {
+                    "kUseDepthUncertaintyInOptimization": false
+                }
+            }
+        },
+        {
+            "name": "depth_uncertainty_weighting1",
+            "config": {
+                "GLOBAL_PARAMETERS": {
+                    "kUseDepthUncertaintyInOptimization": true,
+                    "lambda_depth_weight": 1.0
+                }
+            }
+        },
+        // {
+        //     "name": "depth_uncertainty_weighting5",
+        //     "config": {
+        //         "GLOBAL_PARAMETERS": {
+        //             "kUseDepthUncertaintyInOptimization": true,
+        //             "lambda_depth_weight": 0.01
+        //         }
+        //     }
+        // },
+        // {
+        //     "name": "depth_uncertainty_weighting6",
+        //     "config": {
+        //         "GLOBAL_PARAMETERS": {
+        //             "kUseDepthUncertaintyInOptimization": true,
+        //             "lambda_depth_weight": 0.1
+        //         }
+        //     }
+        // }
+        //   {
+        //     "name": "root_sift",
+        //       "settings": {
+        //         "FeatureTrackerConfig.name": "ROOT_SIFT",
+        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
+        //       }
+        //     },
+        //     {
+        //     "name": "superpoint",
+        //       "settings": {
+        //         "FeatureTrackerConfig.name": "SUPERPOINT",
+        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
+        //       }
+        //     }      
+    ],
+    // "common_parameters": {
+    //   "config": {
+    //     "GLOBAL_PARAMETERS": {
+    //       "kNumMinPointsForNewKf": 15
+    //     }
+    //   },
+    //   "settings": {
+    //     "FeatureTrackerConfig.nFeatures": 1000
+    //   }
+    // },
+    "output_path": "kitti",
+    "saved_trajectory_format_type": "kitti"
+}
