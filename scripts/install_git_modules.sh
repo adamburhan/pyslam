@@ -14,8 +14,8 @@ ROOT_DIR="$SCRIPT_DIR_/.."
 
 # ====================================================
 
-set -e
-set -o pipefailSTARTING_DIR=`pwd`  
+#set -e
+STARTING_DIR=`pwd`  
 cd "$ROOT_DIR"  
 
 print_blue '================================================'

@@ -15,8 +15,8 @@ cd "$ROOT_DIR"
 
 # ====================================================
 
-set -e
-set -o pipefail
+#set -e
+
 print_blue '================================================================'
 print_blue "Installing python packages for semantics ..."
 

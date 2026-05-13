@@ -16,8 +16,8 @@ cd "$ROOT_DIR"
 # ====================================================
 
 #set -x
-set -e
-set -o pipefail
+#set -e
+
 PYTHON_ENV=$(python3 -c "import sys; print(sys.prefix)")
 echo "PYTHON_ENV: $PYTHON_ENV"
 

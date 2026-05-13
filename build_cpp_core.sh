@@ -19,8 +19,8 @@ SCRIPTS_DIR="$ROOT_DIR/scripts"
 STARTING_DIR=`pwd`
 cd "$ROOT_DIR"
 
-set -e
-set -o pipefail
+#set -e
+
 print_blue '================================================'
 print_blue "Building pySLAM C++ core"
 print_blue '================================================'
