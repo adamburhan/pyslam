@@ -19,47 +19,6 @@
                 }
             }
         },
-        {
-            "name": "depth_uncertainty_weighting1",
-            "config": {
-                "GLOBAL_PARAMETERS": {
-                    "kUseDepthUncertaintyInOptimization": true,
-                    "lambda_depth_weight": 1.0
-                }
-            }
-        },
-        // {
-        //     "name": "depth_uncertainty_weighting5",
-        //     "config": {
-        //         "GLOBAL_PARAMETERS": {
-        //             "kUseDepthUncertaintyInOptimization": true,
-        //             "lambda_depth_weight": 0.01
-        //         }
-        //     }
-        // },
-        // {
-        //     "name": "depth_uncertainty_weighting6",
-        //     "config": {
-        //         "GLOBAL_PARAMETERS": {
-        //             "kUseDepthUncertaintyInOptimization": true,
-        //             "lambda_depth_weight": 0.1
-        //         }
-        //     }
-        // }
-        //   {
-        //     "name": "root_sift",
-        //       "settings": {
-        //         "FeatureTrackerConfig.name": "ROOT_SIFT",
-        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
-        //       }
-        //     },
-        //     {
-        //     "name": "superpoint",
-        //       "settings": {
-        //         "FeatureTrackerConfig.name": "SUPERPOINT",
-        //         "LoopDetectionConfig.name": "DBOW3_INDEPENDENT"
-        //       }
-        //     }      
     ],
     // "common_parameters": {
     //   "config": {
@@ -71,6 +30,6 @@
     //     "FeatureTrackerConfig.nFeatures": 1000
     //   }
     // },
-    "output_path": "/home/adam/datasets/tartanair/pyslam_outputs",
+    "output_path": "/home/adam/datasets/tartanair/office/pyslam_outputs",
     "saved_trajectory_format_type": "kitti"
 }
