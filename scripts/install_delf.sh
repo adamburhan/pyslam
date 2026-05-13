@@ -18,8 +18,8 @@ STARTING_DIR=`pwd`
 cd "$ROOT_DIR"  
 
 
-#set -e
-
+set -e
+set -o pipefail
 # N.B.: this must be run after having run the script install_git_modules.sh  
 
 print_blue '================================================'

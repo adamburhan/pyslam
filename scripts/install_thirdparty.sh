@@ -2,8 +2,8 @@
 # Author: Luigi Freda 
 # This file is part of https://github.com/luigifreda/pyslam
 
-#set -e
-
+set -e
+set -o pipefail
 # NOTE: If you get build errors related to python interpreter check under Linux then run the following command:
 # export WITH_PYTHON_INTERP_CHECK=ON
 

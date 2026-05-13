@@ -21,8 +21,8 @@ cd "$ROOT_DIR"
 
 print_blue "Running install_all_conda.sh"
 
-#set -e
-
+set -e
+set -o pipefail
 # clean the old .env file if it exists
 if [ -f "$ROOT_DIR/.env" ]; then
   rm "$ROOT_DIR/.env"
@@ -72,7 +72,7 @@ export WITH_PYTHON_INTERP_CHECK=ON  # in order to detect the correct python inte
 # 9. outliers under macos
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # To solve under mac the (crash) issue mentioned in the troubleshoting document
-    pip uninstall tensorflow
+    pip uninstall -y tensorflow || true
     pip install "tensorflow==2.15.*" --force-reinstall
 fi 
 

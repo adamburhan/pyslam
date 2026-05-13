@@ -191,8 +191,8 @@ pip3 uninstall -y opencv-contrib-python
 
 pip3 install --upgrade numpy
 
-#set -e
-
+set -e
+set -o pipefail
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     version=$(lsb_release -a 2>&1)  # ubuntu version
 else 

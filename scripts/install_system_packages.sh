@@ -18,8 +18,8 @@ cd "$ROOT_DIR"
 
 # ====================================================
 
-#set -e
-
+set -e
+set -o pipefail
 print_blue '================================================'
 print_blue "Configuring and installing system packages ..."
 

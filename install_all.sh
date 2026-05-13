@@ -19,8 +19,8 @@ SCRIPTS_DIR="$ROOT_DIR/scripts"
 STARTING_DIR=`pwd`
 cd "$ROOT_DIR"
 
-#set -e
-
+set -e
+set -o pipefail
 # if we are not under docker
 if [ ! -f /.dockerenv  ]; then 
     echo "Insert your sudo password (if prompted)..."
