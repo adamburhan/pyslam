@@ -30,9 +30,8 @@ FROM nvidia/cuda:12.1.1-devel-ubuntu20.04
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC
 
-ENV CFLAGS="-march=x86-64-v3 -mtune=generic" \
-    CXXFLAGS="-march=x86-64-v3 -mtune=generic"
-
+ENV CFLAGS="-march=haswell -mtune=generic" \
+    CXXFLAGS="-march=haswell -mtune=generic"
 
 # ---------------------------------------------------------------------------
 # System dependencies
@@ -121,11 +120,6 @@ ENV TORCH_HOME=/opt/pyslam-cache/torch \
     HF_HOME=/opt/pyslam-cache/huggingface
 RUN mkdir -p /opt/pyslam-cache/torch /opt/pyslam-cache/huggingface
 
-
-RUN pip install --force-reinstall --no-cache-dir \
-    "numpy>=1.26,<2" \
-    "pandas>=2.2,<2.3" \
-    "scipy>=1.10,<1.13"
 
 
 # ---------------------------------------------------------------------------
