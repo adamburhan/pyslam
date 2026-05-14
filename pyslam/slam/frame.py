@@ -1172,11 +1172,6 @@ class Frame(FrameBase):
         # Invalid-depth keypoints: explicitly set to 1.0 after normalization
         weights[~valid_kp] = 1.0
 
-        print(f"shape: {weights.shape}  (should be (N_keypoints,), not (H, W))")
-        print(f"mean: {weights.mean():.4f}  (should be ~1.0 with normalization)")
-        print(f"min: {weights.min():.4f}, max: {weights.max():.4f}")
-        print(f"frac < 0.5: {(weights < 0.5).mean():.4f}")
-
         return weights
 
 
