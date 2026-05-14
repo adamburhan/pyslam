@@ -354,6 +354,22 @@ if __name__ == "__main__":
                             if src == "gt":
                                 if dataset.type in (DatasetType.TARTANAIR, DatasetType.ETH3D):
                                     aux_depth = dataset.getDepthAux(img_id)
+                                    if aux_depth is not None and img_id < 5:
+                                        debug_dir = os.path.join(
+                                            trajectory_saving_base_path or ".", "aux_depth_debug"
+                                        )
+                                        os.makedirs(debug_dir, exist_ok=True)
+                                        Printer.green(
+                                            f"aux_depth[{img_id}]: shape={aux_depth.shape}, dtype={aux_depth.dtype}, "
+                                            f"min={float(np.nanmin(aux_depth)):.3f}, max={float(np.nanmax(aux_depth)):.3f}, "
+                                            f"mean={float(np.nanmean(aux_depth)):.3f}"
+                                        )
+                                        vis = img_from_depth(aux_depth.astype(np.float32))
+                                        vis_color = cv2.applyColorMap(vis, cv2.COLORMAP_TURBO)
+                                        cv2.imwrite(
+                                            os.path.join(debug_dir, f"aux_depth_{img_id:06d}.png"),
+                                            vis_color,
+                                        )
                                 else:
                                     Printer.yellow(
                                         f"GT depth-uncertainty requested but dataset {dataset.type} has no getDepthAux; skipping."
