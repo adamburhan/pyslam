@@ -25,11 +25,19 @@ fi
 if command -v apptainer &>/dev/null; then
   RUNTIME=apptainer
   ENVPREFIX=APPTAINERENV
-  NV_FLAGS=(--nv --nvccli)
+  if [[ "${PYSLAM_USE_GPU:-0}" == "1" ]]; then
+    NV_FLAGS=(--nv --nvccli)
+  else
+    NV_FLAGS=()
+  fi
 elif command -v singularity &>/dev/null; then
   RUNTIME=singularity
   ENVPREFIX=SINGULARITYENV
-  #NV_FLAGS=(--nv)
+  if [[ "${PYSLAM_USE_GPU:-0}" == "1" ]]; then
+    NV_FLAGS=(--nv --nvccli)
+  else
+    NV_FLAGS=()
+  fi
 else
   echo "error: neither apptainer nor singularity found in PATH" >&2
   exit 1
@@ -76,6 +84,8 @@ BINDS=(
   --bind "$HOME/repos/pyslam/main_slam.py:/opt/pyslam/main_slam.py"
   --bind "$HOME/repos/pyslam/config.yaml:/opt/pyslam/config.yaml"
   --bind "$HOME/repos/pyslam/pyslam/config_parameters.py:/opt/pyslam/pyslam/config_parameters.py"
+  --bind "$HOME/repos/pyslam/pyslam/evaluation/slam_evaluation_manager.py:/opt/pyslam/pyslam/evaluation/slam_evaluation_manager.py"
+  --bind "$HOME/repos/pyslam/pyslam/slam/frame.py:/opt/pyslam/pyslam/slam/frame.py"
 )
 [[ -n "$PYSLAM_SRC"    ]] && BINDS+=(--bind "$PYSLAM_SRC:/opt/pyslam/pyslam")
 [[ -n "$PYSLAM_DATA"   ]] && BINDS+=(--bind "$PYSLAM_DATA:/home/adam/datasets")
