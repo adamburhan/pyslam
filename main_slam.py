@@ -28,8 +28,15 @@ import json
 import threading
 import warnings
 import multiprocessing
+import torch
 import torch.multiprocessing as mp
 import platform
+
+# CUDA/cuDNN determinism for NN inference (Depth Anything, NN feature extractors).
+# No-op on CPU paths. Must be set before any model is constructed.
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+torch.use_deterministic_algorithms(True, warn_only=True)
 
 
 from pyslam.config import Config  # , dump_config_to_json
