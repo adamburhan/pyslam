@@ -154,6 +154,10 @@ class SlamEvaluationManager:
             json_data["common_parameters"] if "common_parameters" in json_data else {}
         )
         self.saved_trajectory_format_type = json_data["saved_trajectory_format_type"]
+        # When True, iterations whose other_metrics_info.txt already exists are skipped
+        # (preemption-friendly resume). When False (default), all iterations are re-run
+        # and existing outputs are overwritten in place.
+        self.skip_completed_iterations = json_data.get("skip_completed_iterations", False)
 
         if not just_create_report:
             shutil.copy(self.evaluation_config_path, self.output_path)
@@ -181,6 +185,18 @@ class SlamEvaluationManager:
         iteration_output_path = os.path.abspath(
             os.path.join(dataset_output_path, "iteration_" + str(iteration_idx))
         )
+
+        # Resume support: if enabled and this iteration already produced its final
+        # metrics file, treat it as done and skip re-running (preemption-friendly).
+        if self.skip_completed_iterations:
+            done_marker = os.path.join(iteration_output_path, "other_metrics_info.txt")
+            if os.path.exists(done_marker):
+                Printer.green(
+                    f"Skipping completed iteration: preset={preset_name}, "
+                    f"dataset={dataset_name}, iteration={iteration_idx} "
+                    f"(found {done_marker})"
+                )
+                return None, None
 
         if not os.path.exists(preset_output_path):
             os.makedirs(preset_output_path)
@@ -334,6 +350,8 @@ class SlamEvaluationManager:
                         self.preset_common_parameters,
                         self.output_path,
                     )
+                    if item_run_command is None:
+                        continue
                     commands.append((item_run_command, item_log_output_path))
         print(
             "------------------------------------------------------------------------------------"
