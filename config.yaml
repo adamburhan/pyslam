@@ -5,7 +5,7 @@ DATASET:
   # type: TUM_DATASET
   #type: ICL_NUIM_DATASET
   #type: REPLICA_DATASET
-  # type: TARTANAIR_DATASET
+  type: TARTANAIR_DATASET
   #type: SEVEN_SCENES_DATASET
   #type: NEURAL_RGBD_DATASET
   #type: BONN_RGBD_DYNAMIC_DATASET
@@ -17,7 +17,7 @@ DATASET:
   #type: MCAP_DATASET
   #type: FOLDER_DATASET
   #type: LIVE_DATASET  # Not recommended for current development stage
-  type: ETH3D_DATASET
+  # type: ETH3D_DATASET
 
 
 KITTI_DATASET:
@@ -121,11 +121,11 @@ SCANNET_DATASET:
 TARTANAIR_DATASET:
   type: tartanair
   sensor_type: mono # Here, 'sensor_type' can be 'mono', 'stereo' or 'rgbd'
-  base_path: /Volumes/T9/datasets/tartanair/abandonedfactory_night/Easy
-  name: 'P002'
+  base_path: /home/adam/datasets/tartanair/hospital/Easy
+  name: 'P000'
   settings: settings/TARTANAIR.yaml 
   groundtruth_file: auto
-  environment_type: outdoor
+  #environment_type: outdoor
 
 
 SEVEN_SCENES_DATASET:
