@@ -26,7 +26,7 @@ if command -v apptainer &>/dev/null; then
   RUNTIME=apptainer
   ENVPREFIX=APPTAINERENV
   if [[ "${PYSLAM_USE_GPU:-0}" == "1" ]]; then
-    NV_FLAGS=(--nv --nvccli)
+    NV_FLAGS=(--nv)
   else
     NV_FLAGS=()
   fi
@@ -34,7 +34,7 @@ elif command -v singularity &>/dev/null; then
   RUNTIME=singularity
   ENVPREFIX=SINGULARITYENV
   if [[ "${PYSLAM_USE_GPU:-0}" == "1" ]]; then
-    NV_FLAGS=(--nv --nvccli)
+    NV_FLAGS=(--nv)
   else
     NV_FLAGS=()
   fi
