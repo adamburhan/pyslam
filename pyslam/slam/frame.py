@@ -1115,23 +1115,14 @@ class Frame(FrameBase):
 
     def _compute_kps_depth_weight(self, aux_depth):
         """
-        Compute per-keypoint scalar weights from an auxiliary depth map (GT or predicted).
-        These weights multiply `invSigma2` in the info-matrix assembly at
-        optimizer_g2o.py's reprojection-edge sites. The current formula
-        weight = 1 / (1 + lambda * sigma_d^2) returns values in (0, 1], so this
-        only ever downweights edges (high depth uncertainty -> weight -> 0).
-        Confident keypoints (sigma_d^2 ~ 0) keep weight ~ 1 (no change).
+        Per-keypoint scalar weights from auxiliary depth (GT or predicted).
+        Multiplies invSigma2 in optimizer_g2o.py reprojection-edge assembly.
+        weight = 1/(1 + lambda * ||grad D||^2), normalized to mean 1.
         """
-
-        # Normalize invalid pixels to NaN so downstream filters work correctly:
-        # some datasets use -1 (TartanAir sky) or 0 (raw Kinect) as a sentinel for invalid
-        # instead of NaN; if left in, the gradient term spikes around those regions and
-        # produces spurious low weights.
+        # Normalize sentinels to NaN (TartanAir sky, Kinect zeros, etc.)
         aux_depth = np.where(np.isfinite(aux_depth) & (aux_depth > 0), aux_depth, np.nan)
 
-        # One-shot sanity check: aux_depth is assumed to be metric depth in meters.
-        # Catches unit mismatches (inverse depth, disparity, mm) and sentinel-encoding
-        # mistakes that would silently invalidate the lambda_depth_weight calibration.
+        # One-shot units sanity check
         if not Frame._aux_depth_units_checked:
             Frame._aux_depth_units_checked = True
             valid = aux_depth[~np.isnan(aux_depth)]
@@ -1143,189 +1134,48 @@ class Frame(FrameBase):
                     f"(min={valid.min():.4f}, max={valid.max():.4f})"
                 )
                 if p50 < 0.1:
-                    Printer.red(
-                        f"[aux_depth units check] median {p50:.4f} < 0.1 m -- "
-                        f"aux_depth is likely INVERSE DEPTH or DISPARITY, not metric meters. "
-                        f"lambda_depth_weight calibration will be wrong."
-                    )
+                    Printer.red(f"[aux_depth units check] median {p50:.4f} < 0.1 m -- likely INVERSE DEPTH/DISPARITY.")
                 elif p50 > 1000:
-                    Printer.red(
-                        f"[aux_depth units check] median {p50:.4f} -- "
-                        f"aux_depth values are very large; check whether units are millimeters."
-                    )
+                    Printer.red(f"[aux_depth units check] median {p50:.4f} -- check millimeters.")
                 else:
-                    Printer.green(
-                        f"[aux_depth units check] median {p50:.4f} m looks like metric depth in meters."
-                    )
+                    Printer.green(f"[aux_depth units check] median {p50:.4f} m looks metric.")
 
-        def _sigma_to_ksize(sigma):
-            """
-            Compute kernel size for cv2.GaussianBlur from desired sigma.
-            cv2 requires odd kernel sizes. Standard rule: ksize ~ 6*sigma + 1, rounded to odd.
-            """
-            ksize = int(2 * np.ceil(3 * sigma) + 1)
-            return (ksize, ksize)
+        KSIZE_DIFF = 5
+        depth_m = aux_depth.copy().astype(np.float32)
+        depth_m[depth_m > 20.0] = np.nan
+        depth_filled = np.where(np.isnan(depth_m), 0, depth_m)
 
+        dx_d = cv2.Sobel(depth_filled, cv2.CV_32F, 1, 0, ksize=KSIZE_DIFF)
+        dy_d = cv2.Sobel(depth_filled, cv2.CV_32F, 0, 1, ksize=KSIZE_DIFF)
+        grad_mag_sq = dx_d**2 + dy_d**2   # ||grad D||^2, matches calibration
 
-        def depth_uncertainty_source1(depth, sigma_smooth=1.5, sigma_pixel=1.0):
-            """
-            Gradient term: sigma^2_d = grad^T Sigma_2D grad, isotropic 2D version.
+        # Sample at keypoint locations. self.kps is [u, v] pairs.
+        kps = np.asarray(self.kps).reshape(-1, 2)
+        us = np.clip(np.round(kps[:, 0]).astype(int), 0, grad_mag_sq.shape[1] - 1)
+        vs = np.clip(np.round(kps[:, 1]).astype(int), 0, grad_mag_sq.shape[0] - 1)
+        sigma_d_sq_per_kp = grad_mag_sq[vs, us]
 
-            For isotropic 2D noise (sigma_pixel), this reduces to:
-                sigma^2_d = (grad_u^2 + grad_v^2) * sigma_pixel^2
+        # Keypoints on invalid depth (sky, holes): fall back to weight 1 (no downweighting).
+        # Track which keypoints had valid depth for normalization.
+        depth_at_kp = depth_m[vs, us]
+        valid_kp = ~np.isnan(depth_at_kp)
+        sigma_d_sq_per_kp = np.where(valid_kp, sigma_d_sq_per_kp, 0.0)
 
-            Captures along-surface depth change due to 2D detection noise.
-            Smooths depth before computing gradient to suppress sensor noise
-            and dropout-edge artifacts.
-
-            Parameters
-            ----------
-            depth : (H, W) array, depth in meters, NaN for invalid
-            sigma_smooth : float, Gaussian smoothing sigma (pixels) for gradient
-            sigma_pixel : float, assumed 2D detection noise std (pixels)
-
-            Returns
-            -------
-            var_d : (H, W) array, depth variance contribution from gradient term (m^2)
-            """
-            valid = ~np.isnan(depth)
-            weight = valid.astype(np.float32)
-            depth_filled = np.where(valid, depth, 0.0).astype(np.float32)
-
-            ksize = _sigma_to_ksize(sigma_smooth)
-
-            # NaN-aware Gaussian smoothing: smooth depth*weight and weight separately,
-            # then divide. This handles invalid pixels properly.
-            smoothed_num = cv2.GaussianBlur(depth_filled * weight, ksize, sigma_smooth)
-            smoothed_den = cv2.GaussianBlur(weight, ksize, sigma_smooth)
-
-            # Avoid divide-by-zero where the local neighborhood is all invalid
-            smoothed = np.where(
-                smoothed_den > 0.1,
-                smoothed_num / np.maximum(smoothed_den, 1e-6),
-                np.nan,
-            )
-
-            # Centered finite differences for gradient.
-            # np.gradient returns derivatives along axis 0 first (rows = v), then axis 1 (cols = u).
-            grad_v, grad_u = np.gradient(smoothed)
-
-            grad_mag_sq = grad_u**2 + grad_v**2
-            var_d = grad_mag_sq * (sigma_pixel**2)
-
-            # Mask result where original pixel was invalid
-            var_d = np.where(valid, var_d, np.nan)
-            return var_d
-
-
-        def depth_uncertainty_source2(depth, window_size=7):
-            """
-            Window variance term: Var(d) computed in a local window around each pixel.
-
-            Captures depth discontinuities ('hopping' between near and far surfaces).
-            NaN-aware: only uses valid pixels in the variance computation.
-
-            Use this on synthetic / clean depth (e.g. TartanAir).
-            For Kinect-style sensors with systematic dropout at edges, use
-            depth_uncertainty_nan_proximity instead.
-
-            Parameters
-            ----------
-            depth : (H, W) array, depth in meters, NaN for invalid
-            window_size : int, side length of square window (pixels), must be odd
-
-            Returns
-            -------
-            var_d : (H, W) array, depth variance from local window (m^2)
-            """
-            if window_size % 2 == 0:
-                raise ValueError("window_size must be odd")
-
-            valid = ~np.isnan(depth)
-            weight = valid.astype(np.float32)
-            depth_filled = np.where(valid, depth, 0.0).astype(np.float32)
-
-            # Box filter over an MxM window. cv2.boxFilter returns the *mean*, so we get
-            # mean(d * w), mean(d^2 * w), mean(w) over the window directly.
-            # To get sums, multiply by window_size^2, but we only need ratios so means suffice.
-            ksize = (window_size, window_size)
-
-            mean_w = cv2.boxFilter(weight, ddepth=-1, ksize=ksize, normalize=True)
-            mean_dw = cv2.boxFilter(depth_filled * weight, ddepth=-1, ksize=ksize, normalize=True)
-            mean_d2w = cv2.boxFilter(depth_filled**2 * weight, ddepth=-1, ksize=ksize, normalize=True)
-
-            # Need at least 4 valid samples in the window to compute variance meaningfully.
-            # mean_w is the fraction of valid pixels in the window, so n_valid = mean_w * window_size^2.
-            n_valid = mean_w * (window_size**2)
-            enough_samples = n_valid >= 4
-
-            # Weighted mean and mean-of-squares: divide by mean_w (fraction valid) to get
-            # the per-valid-pixel statistic.
-            safe_mean_w = np.maximum(mean_w, 1e-6)
-            mean = mean_dw / safe_mean_w
-            mean_sq = mean_d2w / safe_mean_w
-            var = mean_sq - mean**2
-            var = np.maximum(var, 0)  # numerical floor
-
-            var = np.where(valid & enough_samples, var, np.nan)
-            return var
-
-
-        def depth_uncertainty_nan_proximity(depth, window_size=7, sigma_default=0.10):
-            """
-            NaN-proximity term for sensor data with systematic dropout at edges
-            (e.g., Kinect structured-light depth on ETH3D).
-
-            Uses local NaN density as a discontinuity proxy: in Kinect data, occlusion
-            shadows around depth discontinuities produce NaN regions, so high NaN density
-            indicates proximity to an edge.
-
-            Parameters
-            ----------
-            depth : (H, W) array, depth in meters, NaN for invalid
-            window_size : int, side length of square window (pixels), must be odd
-            sigma_default : float, default depth uncertainty (m) at fully invalid neighborhoods
-
-            Returns
-            -------
-            var_d : (H, W) array, depth variance from NaN proximity (m^2)
-            """
-            if window_size % 2 == 0:
-                raise ValueError("window_size must be odd")
-
-            valid = ~np.isnan(depth)
-            invalid = (~valid).astype(np.float32)
-
-            # Mean of `invalid` over the window = fraction of NaN pixels in the window
-            nan_frac = cv2.boxFilter(invalid, ddepth=-1, ksize=(window_size, window_size), normalize=True)
-
-            var_d = (nan_frac**2) * (sigma_default**2)
-            var_d = np.where(valid, var_d, np.nan)
-            return var_d
-        
-        # Compute uncertainty map for the whole frame
-        var_grad = depth_uncertainty_source1(aux_depth, sigma_smooth=1.5)
-        #var_disc = depth_uncertainty_nan_proximity(aux_depth, window_size=7, sigma_default=0.10)
-        var_disc = depth_uncertainty_source2(aux_depth, window_size=7)
-        # or depth_uncertainty_source2 for clean depth
-        var_total = np.where(np.isnan(var_grad) | np.isnan(var_disc), np.nan, var_grad + var_disc)
-
-        # Sample at keypoint locations (self.kps is a list of (u, v) coordinates)
-        # Watch out: u is x (column), v is y (row), so depth[v, u].
-        kps = np.asarray(self.kps).reshape(-1, 2)  # shape (N, 2), [u, v]
-        us = np.clip(np.round(kps[:, 0]).astype(int), 0, var_total.shape[1] - 1)
-        vs = np.clip(np.round(kps[:, 1]).astype(int), 0, var_total.shape[0] - 1)
-        sigma_d_sq_per_kp = var_total[vs, us]
-
-        # Convert to multiplicative weight on invSigma2.
-        # If keypoint i has high σ²_d, its weight should decrease.
-        # Common choice: weight = σ²_octave / (σ²_octave + σ²_d) or similar normalization.
-        # The exact form depends on how you want to combine with octave.
-        # Simple version: weight = 1 / (1 + λ * σ²_d) for some λ.
-        lambda_ = Parameters.lambda_depth_weight  # tunable
-        sigma_d_default_sq = 0.10**2  # 10 cm uncertainty for unknown-depth keypoints
-        sigma_d_sq_per_kp = np.where(np.isnan(sigma_d_sq_per_kp), sigma_d_default_sq, sigma_d_sq_per_kp)
+        lambda_ = Parameters.lambda_depth_weight
         weights = 1.0 / (1.0 + lambda_ * sigma_d_sq_per_kp)
+
+        # Mean-1 normalization over valid-depth keypoints (keeps chi2 culling near baseline).
+        if valid_kp.sum() > 0:
+            mean_w = weights[valid_kp].mean()
+            if mean_w > 1e-9:
+                weights = weights / mean_w
+        # Invalid-depth keypoints: explicitly set to 1.0 after normalization
+        weights[~valid_kp] = 1.0
+
+        print(f"shape: {weights.shape}  (should be (N_keypoints,), not (H, W))")
+        print(f"mean: {weights.mean():.4f}  (should be ~1.0 with normalization)")
+        print(f"min: {weights.min():.4f}, max: {weights.max():.4f}")
+        print(f"frac < 0.5: {(weights < 0.5).mean():.4f}")
 
         return weights
 
