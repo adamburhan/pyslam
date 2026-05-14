@@ -328,7 +328,7 @@ SYSTEM_STATE:
 SAVE_TRAJECTORY:
   save_trajectory: True
   format_type: kitti             # supported formats: `tum`, `kitti`, `euroc`
-  output_folder: results/metrics # relative to pyslam root folder 
+  output_folder: /home/adam/datasets/tartanair/hospital/Easy/pyslam_outputs # relative to pyslam root folder 
   basename: trajectory           # basename of the trajectory saving output
 
 
