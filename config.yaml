@@ -337,5 +337,5 @@ SAVE_TRAJECTORY:
 GLOBAL_PARAMETERS: 
   #kDoVolumetricIntegration: True
   #kVolumetricIntegrationUseDepthEstimator: True
-  #kLogsFolder: /tmp/pyslam_logs       # to redirect the prints of SLAM to the set folder
+  kLogsFolder: /home/adam/datasets/tartanair/hospital/Easy/pyslam_outputs       # to redirect the prints of SLAM to the set folder
   
