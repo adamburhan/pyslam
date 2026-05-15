@@ -1117,9 +1117,13 @@ class Frame(FrameBase):
         """
         Per-keypoint scalar weights from auxiliary depth (GT or predicted).
         Multiplies invSigma2 in optimizer_g2o.py reprojection-edge assembly.
-        weight = 1/(1 + lambda * ||grad D||^2), normalized to mean 1.
+
+        weight = 1 / (1 + lambda * ||grad ln D||^2), median-normalized to ~1
+        over valid-depth keypoints. Log-depth gradient is scale-invariant
+        (matches multiplicative depth-noise model) and removes the need for a
+        depth cap. Pixels whose Sobel neighborhood touches NaN get weight 1.
         """
-        # Normalize sentinels to NaN (TartanAir sky, Kinect zeros, etc.)
+        # Normalize sentinels to NaN (TartanAir inf/sky, Kinect zeros, etc.)
         aux_depth = np.where(np.isfinite(aux_depth) & (aux_depth > 0), aux_depth, np.nan)
 
         # One-shot units sanity check
@@ -1140,14 +1144,24 @@ class Frame(FrameBase):
                 else:
                     Printer.green(f"[aux_depth units check] median {p50:.4f} m looks metric.")
 
-        KSIZE_DIFF = 5
-        depth_m = aux_depth.copy().astype(np.float32)
-        depth_m[depth_m > 20.0] = np.nan
-        depth_filled = np.where(np.isnan(depth_m), 0, depth_m)
+        KSIZE_DIFF = 3
+        log_depth = np.log(aux_depth.astype(np.float32))  # NaN propagates from invalid pixels
+        nan_mask = ~np.isfinite(log_depth)
+        log_depth_filled = np.where(nan_mask, 0.0, log_depth)
 
-        dx_d = cv2.Sobel(depth_filled, cv2.CV_32F, 1, 0, ksize=KSIZE_DIFF)
-        dy_d = cv2.Sobel(depth_filled, cv2.CV_32F, 0, 1, ksize=KSIZE_DIFF)
-        grad_mag_sq = dx_d**2 + dy_d**2   # ||grad D||^2, matches calibration
+        # ksize=3 Sobel with scale=1/8 gives the true first-derivative magnitude.
+        dx_d = cv2.Sobel(log_depth_filled, cv2.CV_32F, 1, 0, ksize=KSIZE_DIFF, scale=1.0 / 8.0)
+        dy_d = cv2.Sobel(log_depth_filled, cv2.CV_32F, 0, 1, ksize=KSIZE_DIFF, scale=1.0 / 8.0)
+        grad_mag_sq = dx_d * dx_d + dy_d * dy_d  # ||grad ln D||^2
+
+        # Pixels whose KSIZE_DIFF x KSIZE_DIFF neighborhood includes any NaN
+        # have spurious gradients from the 0-fill; zero them so lambda*g^2 -> 0
+        # and the keypoint falls back to weight 1 via the valid_kp branch.
+        nan_neighborhood = cv2.dilate(
+            nan_mask.astype(np.uint8),
+            np.ones((KSIZE_DIFF, KSIZE_DIFF), np.uint8),
+        ).astype(bool)
+        grad_mag_sq[nan_neighborhood] = 0.0
 
         # Sample at keypoint locations. self.kps is [u, v] pairs.
         kps = np.asarray(self.kps).reshape(-1, 2)
@@ -1155,21 +1169,21 @@ class Frame(FrameBase):
         vs = np.clip(np.round(kps[:, 1]).astype(int), 0, grad_mag_sq.shape[0] - 1)
         sigma_d_sq_per_kp = grad_mag_sq[vs, us]
 
-        # Keypoints on invalid depth (sky, holes): fall back to weight 1 (no downweighting).
-        # Track which keypoints had valid depth for normalization.
-        depth_at_kp = depth_m[vs, us]
-        valid_kp = ~np.isnan(depth_at_kp)
+        # A keypoint is "valid" only if its gradient neighborhood is clean
+        # (no NaN contamination, which also implies depth at the kp itself is defined).
+        valid_kp = ~nan_neighborhood[vs, us]
         sigma_d_sq_per_kp = np.where(valid_kp, sigma_d_sq_per_kp, 0.0)
 
         lambda_ = Parameters.lambda_depth_weight
         weights = 1.0 / (1.0 + lambda_ * sigma_d_sq_per_kp)
 
-        # Mean-1 normalization over valid-depth keypoints (keeps chi2 culling near baseline).
+        # Median-1 normalization over valid-depth keypoints (robust to a few
+        # high-gradient outliers; the mean was sensitive to them).
         if valid_kp.sum() > 0:
-            mean_w = weights[valid_kp].mean()
-            if mean_w > 1e-9:
-                weights = weights / mean_w
-        # Invalid-depth keypoints: explicitly set to 1.0 after normalization
+            med_w = float(np.median(weights[valid_kp]))
+            if med_w > 1e-9:
+                weights = weights / med_w
+        # Invalid keypoints: explicit weight 1 so they aren't downweighted.
         weights[~valid_kp] = 1.0
 
         return weights
